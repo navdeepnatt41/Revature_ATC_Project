@@ -14,6 +14,7 @@ class FlightStatus(Enum):
     EN_ROUTE = "En_Route"
     ARRIVED = "Arrived"
     COMPLETED = "Completed"
+    CANCELED = "Canceled"
 
 @dataclass
 class Flight(Base):

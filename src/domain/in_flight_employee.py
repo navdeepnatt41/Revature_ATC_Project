@@ -9,8 +9,8 @@ from enum import Enum
 
 class EmployeePosition(Enum):
     CAPTAIN = "Captain",
-    COPILOT = "Co-pilot"
-    MANAGER = "Flight Purser"
+    COPILOT = "Co-pilot",
+    MANAGER = "Flight Purser",
     FLIGHT_ATTENDANT = "Flight Attendant"
     
 class InFlightEmployee(Base):

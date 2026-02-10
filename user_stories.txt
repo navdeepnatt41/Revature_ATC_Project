@@ -1,0 +1,54 @@
+Core Idea: Flight Data for ATCs
+
+Story Points (1-10)
+User Stories:
+
+    CRUD operations for the following entities:
+        Flight
+        Aircraft
+        Flight_Crew
+        Route?
+            Create, Delete
+        In_Flight_Employee
+
+    GET:
+    - As a user, I want to be able to see all active flights in my city. 
+    - As a flight dispatcher, I want to view all scheduled flights for a specific route so I can manage flight assignments efficiently.
+    - As a customer service agent, I want to look up route details including origin and destination airports to answer passenger queries.
+    - As a flight crew member, I want to see my upcoming scheduled flights.
+    - As HR, I want to track employee positions and statuses to ensure compliance with regulations.
+    - As a maintenance manager, I want to view all aircraft by manufacturer and model to schedule maintenance.
+    - As an in-flight employee/pilot, I want to view my upcoming flight assignments including supervisor and airline details.
+    - As a passenger, I want to see complete airport information (name, city, country) for my departure and arrival locations.
+
+    POST:
+    - As a scheduler, I want to assign aircraft to flights based on availability and route requirements.
+    - As a network planner, I want to be able to schedule new flights.
+    
+    PUT:
+    - As an operations manager, I want to update flight status in real-time so passengers and crew receive accurate information.
+    
+    PATCH:
+    
+    DELETE:
+    - As a operations manager, I want to remove airlines that are no longer in businesses
+    - As a scheduler, I want to remove routes that are no longer being flown
+    - As an employee, I want to quit
+    - As a scheduler, I want to cancel flights based on availability and/or weather events
+    - As an inspector, I want to remove a plane from service if it is to old and in disrepair
+    
+    Stretch Goal 🤓:
+    - API data
+    - User Login
+    - Front End
+    - Implement Async for multiple users
+
+Task List:
+1. Generators for each entity 
+    a. 
+    b.
+    c.
+
+
+
+
