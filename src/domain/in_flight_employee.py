@@ -17,7 +17,7 @@ class InFlightEmployee(Base):
     employee_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     IATA_code = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
     f_name = Column(String, nullable=False)
-    f_name = Column(String, nullable=False)
+    l_name = Column(String, nullable=False)
     position = Column(SQLEnum(EmployeePosition), nullable=False)
     status = Column(String, nullable=False)
     supervised = Column(UUID(as_uuid=True), ForeignKey('in_flight_employee.employee_id'))
