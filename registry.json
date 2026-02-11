@@ -74,5 +74,42 @@
             "airport_address": "E 133rd St, Bronx, NY 10451" 
         }
     },
-    "aircraft": [ "AC0001", "AC0002", "AC0003", "AC0004", "AC0005", "AC0006", "AC0007", "AC0008", "AC0009"]
+    "aircrafts": {
+        "AC0001": {
+            "aircraft_model": "Boeing 737",
+            "manufacturer": "Boeing"
+        },
+        "AC0002": {
+            "aircraft_model": "Airbus A320",
+            "manufacturer": "Airbus"
+        },
+        "AC0003": {
+            "aircraft_model": "Boeing 777",
+            "manufacturer": "Boeing"
+        },
+        "AC0004": {
+            "aircraft_model": "Airbus A380",
+            "manufacturer": "Airbus"
+        },
+        "AC0005": {
+            "aircraft_model": "Boeing 787",
+            "manufacturer": "Boeing"
+        },
+        "AC0006": {
+            "aircraft_model": "Airbus A350",
+            "manufacturer": "Airbus"
+        },
+        "AC0007": {
+            "aircraft_model": "Boeing 747",
+            "manufacturer": "Boeing"
+        },
+        "AC0008": {
+            "aircraft_model": "Airbus A330",
+            "manufacturer": "Airbus"
+        },
+        "AC0009": {
+            "aircraft_model": "Boeing 767",
+            "manufacturer": "Boeing"
+        }
+    }
 }

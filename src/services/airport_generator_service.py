@@ -1,3 +1,4 @@
+import json
 from src.domain import Airport
 
 def generate_airports():
@@ -5,7 +6,7 @@ def generate_airports():
     # We want to read from a file called "registry.json"
     with open("registry.json", "r") as f:
         data = f.read()
-        import json
+        
         data = json.loads(data)
         airports_data = data["airports"]
         
