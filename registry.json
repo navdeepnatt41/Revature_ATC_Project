@@ -1,5 +1,78 @@
 {
     "airlines": ["AA", "DL", "UA"],
-    "airports": ["JFK", "LAX", "ORD", "DFW", "EWR", "SFO", "ATL", "DEN", "CLT", "MIA", "SEA", "LGA"],
+    "airports": {
+        "JFK": {
+            "airport_name": "John F. Kennedy International Airport",
+            "airport_country": "USA",
+            "airport_city": "New York",
+            "airport_address": "Queens, NY 11430"
+        },
+        "LAX": {
+            "airport_name": "Los Angeles International Airport",
+            "airport_country": "USA",
+            "airport_city": "Los Angeles",
+            "airport_address": "1 World Way, Los Angeles, CA 90045"
+        },
+        "ORD": {
+            "airport_name": "O'Hare International Airport",
+            "airport_country": "USA",
+            "airport_city": "Chicago",
+            "airport_address": "10000 W O'Hare Ave, Chicago, IL 606"
+        },
+        "DFW": {
+            "airport_name": "Dallas/Fort Worth International Airport",
+            "airport_country": "USA",
+            "airport_city": "Dallas/Fort Worth",
+            "airport_address": "2400 Aviation Dr, DFW Airport, TX 75261"
+        },
+        "EWR": {
+            "airport_name": "Newark Liberty International Airport",
+            "airport_country": "USA",
+            "airport_city": "Newark",
+            "airport_address": "3 Brewster Rd, Newark, NJ 07114"
+        },
+        "SFO": {
+            "airport_name": "San Francisco International Airport",
+            "airport_country": "USA",
+            "airport_city": "San Francisco",
+            "airport_address": "San Francisco, CA 94128"
+        },
+        "ATL": {
+            "airport_name": "Hartsfield-Jackson Atlanta International Airport",
+            "airport_country": "USA",
+            "airport_city": "Atlanta",
+            "airport_address": "6000 N Terminal Pkwy, Atlanta, GA 30320"
+        },
+        "DEN": {
+            "airport_name": "Denver International Airport",
+            "airport_country": "USA",
+            "airport_city": "Denver",
+            "airport_address": "8500 Peña Blvd, Denver, CO 80249"
+        },
+        "CLT": {
+            "airport_name": "Charlotte Douglas International Airport",
+            "airport_country": "USA",
+            "airport_city": "Charlotte",
+            "airport_address": "5501 Josh Birmingham Pkwy, Charlotte, NC 28208"
+        },
+        "MIA": {
+            "airport_name": "Miami International Airport",
+            "airport_country": "USA",
+            "airport_city": "Miami",
+            "airport_address": "2100 NW 42nd Ave, Miami, FL 33142"
+        },
+        "SEA": {
+            "airport_name": "Seattle-Tacoma International Airport",
+            "airport_country": "USA",
+            "airport_city": "Seattle",
+            "airport_address": "17801 International Blvd, Seattle, WA 98158"
+        },
+        "LGA": {
+            "airport_name": "LaGuardia Airport",
+            "airport_country": "USA",
+            "airport_city": "New York",
+            "airport_address": "E 133rd St, Bronx, NY 10451" 
+        }
+    },
     "aircraft": [ "AC0001", "AC0002", "AC0003", "AC0004", "AC0005", "AC0006", "AC0007", "AC0008", "AC0009"]
 }
