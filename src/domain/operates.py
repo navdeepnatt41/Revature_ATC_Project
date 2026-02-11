@@ -5,5 +5,5 @@ from src.base import Base
 class Operate(Base):
     __tablename__ = 'operates'
     
-    airline_designator = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
-    airport_code = Column(UUID(as_uuid=True), ForeignKey('airport.airport_code'), nullable=False)
+    airline_designator = Column(String, ForeignKey('airline.airline_designator'), primary_key=True, nullable=False) #composite key
+    airport_code = Column(String, ForeignKey('airport.airport_code'), primary_key=True, nullable=False) #composite key

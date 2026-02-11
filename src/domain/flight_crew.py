@@ -10,3 +10,5 @@ class FlightCrew(Base):
     employee_id = Column(UUID(as_uuid=True), ForeignKey("in_flight_employee.employee_id"), primary_key=True, nullable=False)
 
 
+    flight_id = Column(UUID(as_uuid=True), ForeignKey("flight.flight_id"), primary_key=True, nullable=False) #composite key
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("in_flight_employee.employee_id"), primary_key=True,  nullable=False) #composite key

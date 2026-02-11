@@ -3,7 +3,9 @@
 ### Alembic
 - Set up migrations
 
+
 ### Generators
+- We need to generate a list of sample data that should be common/join-able across 
 For now, we're just going to hardcode data in the generatorse
 - Aircraft
 - Airline

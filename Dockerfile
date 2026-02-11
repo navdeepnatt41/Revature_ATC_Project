@@ -5,9 +5,10 @@ RUN apt-get update && apt-get install -y curl build-essential
 RUN curl -sSl https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 COPY pyproject.toml poetry.lock /app/
+
 #RUN poetry lock --no-interaction
 RUN poetry config virtualenvs.create false
-RUN poetry install --no-root --without dev --no-interaction --no-ansi
+RUN poetry install --no-root --only main --no-interaction --no-ansi
 ENV PATH="/usr/local/bin:/root/.local/bin:$PATH"
 COPY src /app/src
 COPY src/main.py /app/main.py
