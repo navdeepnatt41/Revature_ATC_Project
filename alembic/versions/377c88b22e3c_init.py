@@ -1,8 +1,8 @@
-"""init_2
+"""init
 
-Revision ID: b453438fe8d6
-Revises: 437009c7fba0
-Create Date: 2026-02-11 19:04:48.179301
+Revision ID: 377c88b22e3c
+Revises: 
+Create Date: 2026-02-11 20:28:57.653577
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b453438fe8d6'
-down_revision: Union[str, Sequence[str], None] = '437009c7fba0'
+revision: str = '377c88b22e3c'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -55,7 +55,7 @@ def upgrade() -> None:
     )
     op.create_table('operates',
     sa.Column('airline_designator', sa.String(), nullable=False),
-    sa.Column('airport_code', sa.UUID(), nullable=False),
+    sa.Column('airport_code', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['airline_designator'], ['airline.airline_designator'], ),
     sa.ForeignKeyConstraint(['airport_code'], ['airport.airport_code'], ),
     sa.PrimaryKeyConstraint('airline_designator', 'airport_code')

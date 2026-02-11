@@ -20,8 +20,14 @@ dependencies = [
     "ipykernel (>=7.2.0,<8.0.0)",
     "jupyter (>=1.1.1,<2.0.0)",
     "uvicorn (>=0.40.0,<0.41.0)",
-    "dotenv (>=0.9.9,<0.10.0)"
+    "python-dotenv (>=1.2.1,<2.0.0)"
 ]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "revature-atc-project"
+version = "0.1.0"
+package-mode = false
