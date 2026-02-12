@@ -6,3 +6,7 @@ class Airline(Base):
 
     airline_designator = Column(String, primary_key=True, nullable=True)
     name = Column(String, nullable=False)
+
+    def __str__(self):
+        return f"Airline(designator={self.airline_designator}, name={self.name})"
+        
