@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from src.domain.airline import Airline
 
-class AirlineRepository():
+class AirportRepository():
     def __init__(self, session: Session):
         self.session = session
     
