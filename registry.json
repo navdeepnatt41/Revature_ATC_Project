@@ -1,5 +1,5 @@
 {
-    "airlines": ["AA", "DL", "UA"],
+    "airlines": {"AA":"American Airlines", "DL":"Delta Air Lines", "UA":"United Airlines", "WN":"Southwest Airlines", "AS":"Alaska Airlines"},
     "airports": ["JFK", "LAX", "ORD", "DFW", "EWR", "SFO", "ATL", "DEN", "CLT", "MIA", "SEA", "LGA"],
     "aircraft": [ "AC0001", "AC0002", "AC0003", "AC0004", "AC0005", "AC0006", "AC0007", "AC0008", "AC0009"]
 }
