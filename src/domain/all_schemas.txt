@@ -1,0 +1,132 @@
+import uuid
+from sqlalchemy import Column, ForeignKey, String, Integer, Float, Boolean
+from sqlalchemy.dialects.postgresql import UUID
+from src.base import Base
+
+class Aircraft(Base):
+    __tablename__ = "aircraft"
+
+    aircraft_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    airline_designator = Column(String, ForeignKey("airline.airline_designator"), nullable=False)
+
+    manufacturer = Column(String, nullable=True)
+    aircraft_model = Column(String, nullable=True)from sqlalchemy import Column, String
+from src.base import Base
+    
+class Airline(Base):
+    __tablename__ = 'airline'
+
+    airline_designator = Column(String, primary_key=True, nullable=True)
+    name = Column(String, nullable=False)
+
+    def __str__(self):
+        return f"Airline(designator={self.airline_designator}, name={self.name})"
+        import uuid
+from dataclasses import dataclass
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import UUID
+from src.base import Base
+
+from src.base import Base
+
+@dataclass
+class Airport(Base):
+  __tablename__ = 'airport'
+
+  airport_code = Column(String, primary_key= True)
+  airport_name = Column(String, nullable= False)
+  airport_country = Column(String, nullable= False)
+  airport_city = Column(String, nullable= False)
+  airport_address = Column(String, nullable= False)
+import uuid
+from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from src.base import Base
+
+class FlightCrew(Base):
+    __tablename__ = 'flight_crew'
+
+    flight_id = Column(UUID(as_uuid=True), ForeignKey("flight.flight_id"), primary_key=True, nullable=False)
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("in_flight_employee.employee_id"), primary_key=True, nullable=False)
+
+
+    flight_id = Column(UUID(as_uuid=True), ForeignKey("flight.flight_id"), primary_key=True, nullable=False) #composite key
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("in_flight_employee.employee_id"), primary_key=True,  nullable=False) #composite key
+import uuid
+from dataclasses import dataclass
+from sqlalchemy import Column, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy.dialects.postgresql import UUID
+
+from src.base import Base
+from enum import Enum
+
+class FlightStatus(Enum):
+    SCHEDULED = "Scheduled"
+    BOARDING = "Boarding"
+    DEPARTED = "Departed"
+    EN_ROUTE = "En_Route"
+    ARRIVED = "Arrived"
+    COMPLETED = "Completed"
+    CANCELED = "Canceled"
+
+@dataclass
+class Flight(Base):
+    __tablename__ = 'flight'
+    
+    flight_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    route_id = Column(UUID(as_uuid=True), ForeignKey("route.route_id"))
+    flight_status = Column(SQLEnum(FlightStatus), default=FlightStatus.SCHEDULED)
+    aircraft_id = Column(UUID(as_uuid=True), ForeignKey("aircraft.aircraft_id"))
+    arrival_time = Column(DateTime)
+    dept_time = Column(DateTime)
+    
+
+
+import uuid
+from sqlalchemy import Column, String, ForeignKey, Enum as SQLEnum
+from sqlalchemy.dialects.postgresql import UUID
+
+from src.base import Base
+from enum import Enum
+
+class EmployeePosition(Enum):
+    CAPTAIN = "Captain"
+    COPILOT = "Co-pilot"
+    MANAGER = "Flight Purser"
+    FLIGHT_ATTENDANT = "Flight Attendant"
+    
+class InFlightEmployee(Base):
+    __tablename__ = 'in_flight_employee'
+    
+    employee_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    IATA_code = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
+    f_name = Column(String, nullable=False)
+    l_name = Column(String, nullable=False)
+    position = Column(SQLEnum(EmployeePosition), nullable=False)
+    status = Column(String, nullable=False)
+    supervised = Column(UUID(as_uuid=True), ForeignKey('in_flight_employee.employee_id'))
+
+    
+
+
+from sqlalchemy import Column, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
+from src.base import Base
+
+class Operate(Base):
+    __tablename__ = 'operates'
+    
+    airline_designator = Column(String, ForeignKey('airline.airline_designator'), primary_key=True, nullable=False) #composite key
+    airport_code = Column(String, ForeignKey('airport.airport_code'), primary_key=True, nullable=False) #composite keyimport uuid
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+
+from src.base import Base
+
+class Route(Base):
+    __tablename__ = "route"
+    
+    route_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    destination_airport_code = Column(String, ForeignKey("airport.airport_code"))
+    origin_airport_code = Column(String, ForeignKey("airport.airport_code"))

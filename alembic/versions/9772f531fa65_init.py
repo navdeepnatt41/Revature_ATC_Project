@@ -1,8 +1,8 @@
-"""init_2
+"""init
 
-Revision ID: b453438fe8d6
-Revises: 437009c7fba0
-Create Date: 2026-02-11 19:04:48.179301
+Revision ID: 9772f531fa65
+Revises: 
+Create Date: 2026-02-12 21:59:20.281431
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b453438fe8d6'
-down_revision: Union[str, Sequence[str], None] = '437009c7fba0'
+revision: str = '9772f531fa65'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -44,21 +44,22 @@ def upgrade() -> None:
     )
     op.create_table('in_flight_employee',
     sa.Column('employee_id', sa.UUID(), nullable=False),
-    sa.Column('IATA_code', sa.String(), nullable=False),
+    sa.Column('airline_designator', sa.String(), nullable=False),
     sa.Column('f_name', sa.String(), nullable=False),
+    sa.Column('l_name', sa.String(), nullable=False),
     sa.Column('position', sa.Enum('CAPTAIN', 'COPILOT', 'MANAGER', 'FLIGHT_ATTENDANT', name='employeeposition'), nullable=False),
     sa.Column('status', sa.String(), nullable=False),
     sa.Column('supervised', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['IATA_code'], ['airline.airline_designator'], ),
+    sa.ForeignKeyConstraint(['airline_designator'], ['airline.airline_designator'], ),
     sa.ForeignKeyConstraint(['supervised'], ['in_flight_employee.employee_id'], ),
     sa.PrimaryKeyConstraint('employee_id')
     )
     op.create_table('operates',
+    sa.Column('airport_code', sa.String(), nullable=False),
     sa.Column('airline_designator', sa.String(), nullable=False),
-    sa.Column('airport_code', sa.UUID(), nullable=False),
     sa.ForeignKeyConstraint(['airline_designator'], ['airline.airline_designator'], ),
     sa.ForeignKeyConstraint(['airport_code'], ['airport.airport_code'], ),
-    sa.PrimaryKeyConstraint('airline_designator', 'airport_code')
+    sa.PrimaryKeyConstraint('airport_code', 'airline_designator')
     )
     op.create_table('route',
     sa.Column('route_id', sa.UUID(), nullable=False),

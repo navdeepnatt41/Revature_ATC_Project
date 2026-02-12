@@ -1,9 +1,6 @@
-import uuid
 from dataclasses import dataclass
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
-from src.base import Base
-
 from src.base import Base
 
 @dataclass

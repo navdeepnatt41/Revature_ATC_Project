@@ -15,7 +15,7 @@ class InFlightEmployee(Base):
     __tablename__ = 'in_flight_employee'
     
     employee_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    IATA_code = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
+    airline_designator = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
     f_name = Column(String, nullable=False)
     l_name = Column(String, nullable=False)
     position = Column(SQLEnum(EmployeePosition), nullable=False)
