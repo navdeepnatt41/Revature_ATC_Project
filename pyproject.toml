@@ -21,8 +21,24 @@ dependencies = [
     "jupyter (>=1.1.1,<2.0.0)",
     "uvicorn (>=0.40.0,<0.41.0)",
     "faker (>=40.4.0,<41.0.0)",
-    "dotenv (>=0.9.9,<0.10.0)"
+    "python-dotenv (>=1.2.1,<2.0.0)"
+    
 ]
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pylint (>=4.0.4,<5.0.0)",
+    "black (>=26.1.0,<27.0.0)",
+    "isort (>=7.0.0,<8.0.0)",
+    "pytest (>=9.0.2,<10.0.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.pytyest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
