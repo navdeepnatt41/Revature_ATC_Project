@@ -25,6 +25,8 @@ class Flight(Base):
     aircraft_id = Column(UUID(as_uuid=True), ForeignKey("aircraft.aircraft_id"))
     arrival_time = Column(DateTime)
     dept_time = Column(DateTime)
+
+    # dsfsjdifsjd
     
 
 
