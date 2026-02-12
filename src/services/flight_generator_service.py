@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from domain.flight import Flight, FlightStatus
+from src.domain.flight import Flight, FlightStatus
 
 def generate_flights(
     route_ids: list[UUID],

@@ -1,5 +1,6 @@
-from fastapi import FastAPI
-from src.services.flight_generator_service.py import generate_flights
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from src.services.flight_generator_service import generate_flights
 
 
 app = FastAPI()
@@ -9,7 +10,7 @@ def read_root():
     return {"status": "success", "message": "FastAPI server is live!"}
 
 @app.post("/seed/flights")
-def seed_flights(sesh: Session = Depends(get_db)):
+def seed_flights():
 
     route_ids = [
         uuid.UUID("11111111-1111-1111-1111-111111111111"),
@@ -21,3 +22,5 @@ def seed_flights(sesh: Session = Depends(get_db)):
     flights = generate_flights(route_ids, aircraft_ids)
 
     return flights
+
+print("fuhhh")
