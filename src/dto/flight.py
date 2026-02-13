@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class FlightCreate(BaseModel):
-    flight_id: UUID
+    flight_id: UUID # TODO: don't need UUID for Create(?)
     route_id: UUID
     flight_status: str
     aircraft_id: UUID

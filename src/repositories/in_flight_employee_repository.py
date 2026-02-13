@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
-from src.domain.in_flight_employee import InFlightEmployee
+from src.domain.in_flight_employee import InFlightEmployee, InFlightStatus
 from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
 
 
@@ -22,7 +22,7 @@ class InFlightEmployeeRepository(InFlightEmployeeRepositoryProtocol):
             .one_or_none() #returning None if none is found
         )
     
-    def find_by_first_and_last(self, first: str, last: str) -> Optional[InFlightEmployee]:
+    def find_by_first_and_last(self, first: str, last: str) -> Optional[list[InFlightEmployee]]:
         return(
             self.session.query(InFlightEmployee)
             .filter(
@@ -43,16 +43,11 @@ class InFlightEmployeeRepository(InFlightEmployeeRepositoryProtocol):
     def list_all(self) -> list[InFlightEmployee]:
         return self.session.query(InFlightEmployee).all() 
 
-    def update(self, employee: InFlightEmployee) -> InFlightEmployee:
+    def update_status(self, employee: InFlightEmployee, status: InFlightStatus) -> InFlightEmployee:
         existing = self.session.get(InFlightEmployee, employee.employee_id)
         if existing is None:
             raise ValueError("Employee not found")
-        existing.airline_designator = employee.airline_designator
-        existing.f_name = employee.f_name
-        existing.l_name = employee.l_name
-        existing.position = employee.position
-        existing.status = employee.status
-        existing.supervised = employee.supervised
+        setattr(existing, "status", status)
 
         self.session.commit()
         self.session.refresh(existing)

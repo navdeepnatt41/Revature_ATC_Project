@@ -7,13 +7,11 @@ from src.base import Base
 from enum import Enum
 
 class FlightStatus(Enum):
-    SCHEDULED = "Scheduled"
-    BOARDING = "Boarding"
-    DEPARTED = "Departed"
-    EN_ROUTE = "En_Route"
-    ARRIVED = "Arrived"
-    COMPLETED = "Completed"
-    CANCELED = "Canceled"
+    SCHEDULED = "SCHEDULED"
+    IN_FLIGHT = "IN-FLIGHT"
+    ARRIVED = "ARRIVED"
+    DELAYED = "DELAYED"
+    CANCELLED = "CANCELLED"
 
 @dataclass
 class Flight(Base):

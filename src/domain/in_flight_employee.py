@@ -6,21 +6,25 @@ from src.base import Base
 from enum import Enum
 
 class EmployeePosition(Enum):
-    CAPTAIN = "Captain"
-    COPILOT = "Co-pilot"
-    MANAGER = "Flight Purser"
-    FLIGHT_ATTENDANT = "Flight Attendant"
+    CAPTAIN = "CAPTAIN"
+    COPILOT = "COPILOT"
+    FLIGHT_MANAGER = "FLIGHT_MANAGER"
+    FLIGHT_ATTENDANT = "FLIGHT_ATTENDANT"
+
+class InFlightStatus(Enum):
+    AVAILABLE = "AVAILABLE"
+    SCHEDULED = "SCHEDULED"
     
 class InFlightEmployee(Base):
     __tablename__ = 'in_flight_employee'
     
     employee_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    airline_designator = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
-    f_name = Column(String, nullable=False)
-    l_name = Column(String, nullable=False)
+    #airline_designator = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
     position = Column(SQLEnum(EmployeePosition), nullable=False)
-    status = Column(String, nullable=False)
-    supervised = Column(UUID(as_uuid=True), ForeignKey('in_flight_employee.employee_id'))
+    status = Column(SQLEnum(InFlightStatus), nullable=False)
+    superviser = Column(UUID(as_uuid=True), ForeignKey('in_flight_employee.employee_id'))
 
     
 

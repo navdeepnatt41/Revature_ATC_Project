@@ -1,6 +1,6 @@
 from typing import Protocol, Optional
 from uuid import UUID
-from src.domain.in_flight_employee import InFlightEmployee
+from src.domain.in_flight_employee import InFlightEmployee, InFlightStatus
 
 class InFlightEmployeeRepositoryProtocol(Protocol):
     # class InFlightEmployeeRepositoryProtocol
@@ -10,7 +10,7 @@ class InFlightEmployeeRepositoryProtocol(Protocol):
     def get(self, employee_id: UUID) -> Optional[InFlightEmployee]:
         ...
 
-    def find_by_first_and_last(self, first: str, last: str) -> Optional[InFlightEmployee]:
+    def find_by_first_and_last(self, first: str, last: str) -> Optional[list[InFlightEmployee]]:
         ...
 
     def find_by_first(self, first: str) -> list[InFlightEmployee]:
@@ -19,7 +19,7 @@ class InFlightEmployeeRepositoryProtocol(Protocol):
     def list_all(self) -> list[InFlightEmployee]:
         ...
 
-    def update(self, employee: InFlightEmployee) -> InFlightEmployee:
+    def update_status(self, employee: InFlightEmployee, status: InFlightStatus) -> InFlightEmployee:
         ...
 
     def delete(self, employee_id: UUID) -> None:

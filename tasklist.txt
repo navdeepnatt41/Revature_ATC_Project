@@ -1,0 +1,36 @@
+Endpoints:
+Flight Operations Manager:
+
+1. - update if a flight is delayed, and by how much
+    - update flight.flight_status
+    - update flight.delay_delta
+
+2. schedule new flight
+    (a) make sure the aircraft is available at airport and isn't currently scheduled
+    (b) make sure your flight crew (consisting of pilot, copilot, flight_m, flight_a)
+        currently exist at an airport AND aren't scheduled
+    2a. List all available aircraft at an airport at a given time
+    2b. List all available in-flight employees for flight-crew creation
+
+3. CRUD Routes
+    3a. Create a Route
+    3b. Getting all Routes
+    3c. Deleting a Route (route: Route, authorization_code: Code)
+        - ensure that auth code matches, then delete (cascade)
+    3d. Propose Route Deletion
+        - provide a list of flights that will be cancelled as a warning
+        
+4. Cancelling flights
+    - flight status must be scheduled, NOTHING ELSE (mark aircraft+crew available)
+
+5. Update aircraft for flight
+         - take in parameter of aircraft_id (assume endpoint)
+         - if aircraft not located at dept_airport, return error
+
+Idea: when creating a flight crew, we filter for every employee at the origin airport
+        - then loop through those and check if they 
+        (a) are available (they're not on a flight),
+if they (b) don't have a flight tomorrow or the day after (two day interval)
+ 
+CRUD Stretch:
+    Add CRUD for Airport, Aircraft, etc. ..
