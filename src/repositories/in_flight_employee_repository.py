@@ -1,6 +1,7 @@
 from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
+from src.domain.flight import Flight
 from src.domain.in_flight_employee import InFlightEmployee
 from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
 
@@ -22,7 +23,7 @@ class InFlightEmployeeRepository(InFlightEmployeeRepositoryProtocol):
             .one_or_none() #returning None if none is found
         )
     
-    def find_by_first_and_last(self, first: str, last: str) -> Optional[InFlightEmployee]:
+    def find_by_first_and_last(self, first: str, last: str) -> list[InFlightEmployee]:
         return(
             self.session.query(InFlightEmployee)
             .filter(
@@ -64,3 +65,6 @@ class InFlightEmployeeRepository(InFlightEmployeeRepositoryProtocol):
             raise ValueError("Employee not found")
         self.session.delete(employee)
         self.session.commit()
+
+    def find_upcoming_scheduled(self, employee_id: UUID) -> list[Flight]:
+        return self. 

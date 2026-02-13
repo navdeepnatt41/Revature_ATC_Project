@@ -67,4 +67,4 @@ class FlightRepository(FlightRepositoryProtocol):
         .all()
         )
         print(flights[0].flight_id)
-        return flights
+        return list(flights)

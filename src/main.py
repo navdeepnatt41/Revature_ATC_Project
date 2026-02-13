@@ -4,19 +4,23 @@ from sqlalchemy.orm import Session
 
 from src.db.deps import get_db
 
+from src.domain.exceptions import PermissionDeniedException
+
+from src.domain.airport import Airport
+from src.domain.route import Route
+from src.domain.flight import Flight
+from src.domain.in_flight_employee import InFlightEmployee, EmployeePosition
 from src.repositories.airport_repository import AirportRepository
 from src.repositories.route_repository import RouteRepository
 from src.repositories.flight_repository import FlightRepository
 from src.repositories.in_flight_employee_repository import InFlightEmployeeRepository
 from src.services.in_flight_employee_service import InFlightEmployeeService
-from src.domain.in_flight_employee import InFlightEmployee, EmployeePosition
-from src.domain.exceptions import PermissionDeniedException
 from src.services.customer_service import CustomerService
 from src.services.hr_employee_service import HRemployeeService
+from src.services.route_service import RouteService
 from src.dto.flight import FlightRead
-from src.domain.airport import Airport
-from src.domain.route import Route
-from src.domain.flight import Flight
+from src.services.in_flight_employee_service import InFlightEmployeeService
+
 
 # ENABLE TO LOG
 # from src.loggin_config import setup_logging
@@ -46,10 +50,20 @@ def get_customer_service(flight_repo: FlightRepository = Depends(get_flight_repo
 ) -> CustomerService:
     return CustomerService(airport_repository= airport_repo, route_repository= route_repo, flight_repository= flight_repo)
 
+def get_route_service(
+    route_repo: RouteRepository = Depends(get_route_repository)) -> RouteService:
+        return RouteService(route_repo)
+        
+def get_employee_service()
+
 @app.get("/status")
 def basic_return():
     return {"Status": "Ok!"}
-# Customer endpoints
+#
+#
+# Customer Endpoints
+#
+#
 
 @app.get("/customer/active_flights", response_model=list[FlightRead])
 def get_customer_flights_per_city(
@@ -57,35 +71,29 @@ def get_customer_flights_per_city(
     svc: CustomerService = Depends(get_customer_service)
 ):
     return svc.scheduled_flights_by_city(origin_city)
+    
+@app.get("/customer/airport_info")
+def airport_information_by_flight(
+    flight: Flight,
+    srv: CustomerService = Depends(get_customer_service)
+):
+    return srv.airport_information_by_flight(flight)
+
+#
+#
+# HR EMPLOYEE ENDPOINTS
+#
+#
+# Repository Getter
+def get_in_flight_employee_repository(db: Session = Depends(get_db)) -> InFlightEmployeeRepository:
+    return InFlightEmployeeRepository(db)
+
+# Service Getter
+def get_in_flight_employee_service(repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository)) -> InFlightEmployeeService:
+    return InFlightEmployeeService(repo)
+ 
 
 
-#
-#
-# Customer Endpoints
-#
-#
-# @app.get("/customer/airport_info")
-# def airport_information_by_flight(
-#     flight: Flight,
-#     srv: CustomerService = Depends(get_customer_service)
-# ):
-#     return srv.airport_information_by_flight(flight)
-# 
-# #
-# #
-# # HR EMPLOYEE ENDPOINTS
-# #
-# #
-# # Repository Getter
-# def get_in_flight_employee_repository(db: Session = Depends(get_db)) -> InFlightEmployeeRepository:
-#     return InFlightEmployeeRepository(db)
-# 
-# # Service Getter
-# def get_in_flight_employee_service(repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository)) -> InFlightEmployeeService:
-#     return InFlightEmployeeService(repo)
-# 
-# 
-# 
 # @app.get("/hr/employees", response_model=list[InFlightEmployee])
 # def track_employee_positions(
 #     position: EmployeePosition = Query(None, description="Filter by position"),
@@ -120,9 +128,12 @@ def get_customer_flights_per_city(
 # #
 # # Employee Endpoints
 # #
-# #
-# 
-# #
+@app.get("/employee/upcoming_flights", response_model=list[Flight])
+def upcoming_scheduled_flights_employee(
+    employee_id: str,
+    svc: InFlightEmployeeService = Depends(get),
+):
+    
 # #
 # # Aircraft Scheduler Endpoints
 # #
@@ -131,7 +142,21 @@ def get_customer_flights_per_city(
 # # As a scheduler, I want to assign aircraft to flights based on availability and route requirements
 # #@app.post("/scheduler/assign_aircraft")
 # #def assign_aircraft_to_flight(srv):
-#     # 
+#
+#
+#
+# # As a scheduler, I want to remove routes that are no longer being flown
+@app.delete("/scheduler/routes/{route_id}")
+def remove_route_no_longer_flown(
+    route_id: UUID, #FastAPI reads route_id from url and validates it as a UUID
+    svc: RouteService = Depends(get_route_service)  #injects RouteService
+):
+    route = svc.get(route_id) #looks up route_id using RouteService's get method
+    if route is None: #if missing
+        raise HTTPException(status_code=404, detail="Route not found") #raise error
+    
+    svc.delete(route_id) #calls RouteService's delete method
+    return {"status": "success", "message": f"Route {route_id} has been removed successfully"} #JSON response
 # #
 # #
 # # Operations Manager Endpoints

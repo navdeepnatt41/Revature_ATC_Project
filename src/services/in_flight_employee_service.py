@@ -20,8 +20,8 @@ class InFlightEmployeeService:
         return self.repo.get(employee_id)
 
     def listall(self) -> list[InFlightEmployee]:
-        return self.repo.list()
-
+        return self.repo.get()
+    
     def update(self, employee: InFlightEmployee) -> InFlightEmployee:
         self._validate_employee(employee, require_id=True)
         return self.repo.update(employee)
