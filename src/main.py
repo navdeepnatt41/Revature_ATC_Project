@@ -13,7 +13,7 @@ from src.domain.in_flight_employee import InFlightEmployee, EmployeePosition
 from src.domain.exceptions import PermissionDeniedException
 from src.services.customer_service import CustomerService
 from src.services.hr_employee_service import HRemployeeService
-
+from src.dto.flight import FlightRead
 from src.domain.airport import Airport
 from src.domain.route import Route
 from src.domain.flight import Flight
@@ -50,10 +50,11 @@ def get_customer_service(flight_repo: FlightRepository = Depends(get_flight_repo
 def basic_return():
     return {"Status": "Ok!"}
 # Customer endpoints
-@app.get("/customer/active_flights", response_model=list[Flight])
+
+@app.get("/customer/active_flights", response_model=list[FlightRead])
 def get_customer_flights_per_city(
     origin_city: str,
-    svc: CustomerService
+    svc: CustomerService = Depends(get_customer_service)
 ):
     return svc.scheduled_flights_by_city(origin_city)
 
@@ -63,114 +64,115 @@ def get_customer_flights_per_city(
 # Customer Endpoints
 #
 #
-@app.get("/customer/airport_info")
-def airport_information_by_flight(
-    flight: Flight,
-    srv: CustomerService = Depends(get_customer_service)
-):
-    return srv.airport_information_by_flight(flight)
-
-#
-#
-# HR EMPLOYEE ENDPOINTS
-#
-#
-# Repository Getter
-def get_in_flight_employee_repository(db: Session = Depends(get_db)) -> InFlightEmployeeRepository:
-    return InFlightEmployeeRepository(db)
-
-# Service Getter
-def get_in_flight_employee_service(repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository)) -> InFlightEmployeeService:
-    return InFlightEmployeeService(repo)
-
-
-
-@app.get("/hr/employees", response_model=list[InFlightEmployee])
-def track_employee_positions(
-    position: EmployeePosition = Query(None, description="Filter by position"),
-    status: str = Query(None, description="Filter by status"),
-    svc: InFlightEmployeeService = Depends(get_in_flight_employee_service)
-):
-    """Track employee positions and statuses for compliance"""
-    employees = svc.listall()
-    
-    if position:
-        employees = [e for e in employees if e.position.value == position.value]
-    if status:
-        employees = [e for e in employees if str(e.status) == status]
-    
-    return employees
-
-
-
-@app.delete("/hr/employees/{employee_id}")
-def remove_past_employee(
-    employee_id: UUID,
-    svc: InFlightEmployeeService = Depends(get_in_flight_employee_service)
-):
-    """Remove past employees from the system"""
-    employee = svc.get(employee_id)
-    if not employee:
-        raise HTTPException(status_code=404, detail="Employee not found")
-    
-    svc.delete(employee_id)
-    return {"status": "success", "message": f"Employee {employee_id} removed successfully"}
-#
-#
-# Employee Endpoints
-#
-#
-
-#
-#
-# Aircraft Scheduler Endpoints
-#
-#
-
-# As a scheduler, I want to assign aircraft to flights based on availability and route requirements
-#@app.post("/scheduler/assign_aircraft")
-#def assign_aircraft_to_flight(srv):
-    # 
-#
-#
-# Operations Manager Endpoints
-#
-#
-
-
-# /user/active_flights
-
-# /dispatcher/scheduled_per_rouute
-
-# /cs_agent/route_details
-
-# /crew_member/scheduled_flights
-
-# repo structure
-# one service layer method - calls whatever repos it needs
-#   lots of repo files
+# @app.get("/customer/airport_info")
+# def airport_information_by_flight(
+#     flight: Flight,
+#     srv: CustomerService = Depends(get_customer_service)
+# ):
+#     return srv.airport_information_by_flight(flight)
 # 
-
-
-
-# - - - - - - CRUD endpoints - - - - - -
-
-# GET, POST, PATCH, PUT, DELETE
-# "/user/flight"
-#@app.get("/user/flight")
-#def get_flight(svc: ):
-    
-    
-
-# GET, POST, PATCH, PUT, DELETE
-# "/user/aircraft"
-
-# GET, POST, PATCH, PUT, DELETE
-# "/user/flight-crew"
-
-# GET, POST, PATCH, PUT, DELETE
-# "/user/route"
-
-# GET, POST, PATCH, PUT, DELETE
-# "/user/in-flight-employee"
-
+# #
+# #
+# # HR EMPLOYEE ENDPOINTS
+# #
+# #
+# # Repository Getter
+# def get_in_flight_employee_repository(db: Session = Depends(get_db)) -> InFlightEmployeeRepository:
+#     return InFlightEmployeeRepository(db)
+# 
+# # Service Getter
+# def get_in_flight_employee_service(repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository)) -> InFlightEmployeeService:
+#     return InFlightEmployeeService(repo)
+# 
+# 
+# 
+# @app.get("/hr/employees", response_model=list[InFlightEmployee])
+# def track_employee_positions(
+#     position: EmployeePosition = Query(None, description="Filter by position"),
+#     status: str = Query(None, description="Filter by status"),
+#     svc: InFlightEmployeeService = Depends(get_in_flight_employee_service)
+# ):
+#     """Track employee positions and statuses for compliance"""
+#     employees = svc.listall()
+#     
+#     if position:
+#         employees = [e for e in employees if e.position.value == position.value]
+#     if status:
+#         employees = [e for e in employees if str(e.status) == status]
+#     
+#     return employees
+# 
+# 
+# 
+# @app.delete("/hr/employees/{employee_id}")
+# def remove_past_employee(
+#     employee_id: UUID,
+#     svc: InFlightEmployeeService = Depends(get_in_flight_employee_service)
+# ):
+#     """Remove past employees from the system"""
+#     employee = svc.get(employee_id)
+#     if not employee:
+#         raise HTTPException(status_code=404, detail="Employee not found")
+#     
+#     svc.delete(employee_id)
+#     return {"status": "success", "message": f"Employee {employee_id} removed successfully"}
+# #
+# #
+# # Employee Endpoints
+# #
+# #
+# 
+# #
+# #
+# # Aircraft Scheduler Endpoints
+# #
+# #
+# 
+# # As a scheduler, I want to assign aircraft to flights based on availability and route requirements
+# #@app.post("/scheduler/assign_aircraft")
+# #def assign_aircraft_to_flight(srv):
+#     # 
+# #
+# #
+# # Operations Manager Endpoints
+# #
+# #
+# 
+# 
+# # /user/active_flights
+# 
+# # /dispatcher/scheduled_per_rouute
+# 
+# # /cs_agent/route_details
+# 
+# # /crew_member/scheduled_flights
+# 
+# # repo structure
+# # one service layer method - calls whatever repos it needs
+# #   lots of repo files
+# # 
+# 
+# 
+# 
+# # - - - - - - CRUD endpoints - - - - - -
+# 
+# # GET, POST, PATCH, PUT, DELETE
+# # "/user/flight"
+# #@app.get("/user/flight")
+# #def get_flight(svc: ):
+#     
+#     
+# 
+# # GET, POST, PATCH, PUT, DELETE
+# # "/user/aircraft"
+# 
+# # GET, POST, PATCH, PUT, DELETE
+# # "/user/flight-crew"
+# 
+# # GET, POST, PATCH, PUT, DELETE
+# # "/user/route"
+# 
+# # GET, POST, PATCH, PUT, DELETE
+# # "/user/in-flight-employee"
+# 
+# 

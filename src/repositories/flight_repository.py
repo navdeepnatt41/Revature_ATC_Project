@@ -52,17 +52,19 @@ class FlightRepository(FlightRepositoryProtocol):
         self.session.commit()
 
     def get_scheduled_by_city(self, origin_city: str) -> list[Flight]:
+        print(origin_city)
         flights = (
-            self.session.execute(
-                select(Flight)
-                .join(Flight.route_id)
-                .join(Route.origin_airport_code)
-                .where(
-                    Flight.flight_status == "Scheduled",
-                    Airport.airport_city == origin_city,
-                )
+        self.session.execute(
+            select(Flight)
+            .join(Route, Flight.route_id == Route.route_id)
+            .join(Airport, Route.origin_airport_code == Airport.airport_code)
+            .where(
+                Flight.flight_status == "SCHEDULED",
+                Airport.airport_city == origin_city,
             )
-            .scalars()
-            .all()
         )
-        return list(flights)
+        .scalars()
+        .all()
+        )
+        print(flights[0].flight_id)
+        return flights

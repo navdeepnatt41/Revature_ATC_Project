@@ -1,26 +1,39 @@
-# Builder Stage
+# --- Builder Stage ---
 FROM python:3.12-slim AS builder
 WORKDIR /app
+
 RUN apt-get update && apt-get install -y curl build-essential
-RUN curl -sSl https://install.python-poetry.org | python3 -
+
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
-COPY pyproject.toml poetry.lock /app/
 
-#RUN poetry lock --no-interaction
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-root --only main --no-interaction --no-ansi
-ENV PATH="/usr/local/bin:/root/.local/bin:$PATH"
-COPY src /app/src
-COPY src/main.py /app/main.py
-COPY alembic.ini /app/alembic.ini
-COPY alembic /app/alembic
+# Copy ONLY the dependency files first
+COPY pyproject.toml poetry.lock ./
 
-# Runtime Stage
+# Install dependencies globally in the builder container
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-root --only main --no-interaction --no-ansi
+
+# Now copy the application structure
+COPY src ./src
+COPY alembic.ini ./alembic.ini
+COPY alembic ./alembic
+
+# --- Runtime Stage ---
 FROM python:3.12-slim
 WORKDIR /app
+
+# Copy libraries and binaries from builder
 COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
-COPY --from=builder /app /app
 COPY --from=builder /usr/local/bin /usr/local/bin
+# Copy the /app folder (contains src, alembic, etc.)
+COPY --from=builder /app /app
+
 ENV PYTHONUNBUFFERED=1
-ENV PATH="/usr/local/bin:/root/.local/bin:$PATH"
-CMD ["uvicorn", "src.main:app","--reload", "--host", "0.0.0.0", "--port", "8000"]
+# Ensure the path is set so 'uvicorn' is recognized
+ENV PATH="/usr/local/bin:$PATH"
+
+# THE FIX: We reference src.main:app because main.py is INSIDE the src folder.
+# Change the path to run from the root, not the src folder
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

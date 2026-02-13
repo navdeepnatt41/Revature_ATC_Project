@@ -2,14 +2,14 @@ from typing import Optional
 from uuid import UUID
 
 from src.domain.in_flight_employee import InFlightEmployee, EmployeePosition
-from src.repositories.in_flight_employee_protocol import InflightEmployeeProtocol
+from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
 
 
 ALLOWED_STATUSES = {"Active", "Inactive", "Terminated"}
 
 
 class InFlightEmployeeService:
-    def __init__(self, repo: InflightEmployeeProtocol):
+    def __init__(self, repo: InFlightEmployeeRepositoryProtocol):
         self.repo = repo
 
     def create(self, employee: InFlightEmployee) -> InFlightEmployee:
