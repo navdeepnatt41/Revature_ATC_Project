@@ -20,11 +20,12 @@ class InFlightEmployee(Base):
     
     employee_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     #airline_designator = Column(String, ForeignKey('airline.airline_designator'), nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    position = Column(SQLEnum(EmployeePosition), nullable=False)
-    status = Column(SQLEnum(InFlightStatus), nullable=False)
-    superviser = Column(UUID(as_uuid=True), ForeignKey('in_flight_employee.employee_id'))
+    first_name = Column(String)
+    last_name = Column(String)
+    position = Column(SQLEnum(EmployeePosition))
+    employee_status = Column(SQLEnum(InFlightStatus))
+    supervisor = Column(String, ForeignKey('in_flight_employee.employee_id'))
+    employee_location = Column(String, ForeignKey('airport.airport_code'), nullable=False)
 
     
 

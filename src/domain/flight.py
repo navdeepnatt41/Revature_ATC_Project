@@ -18,11 +18,11 @@ class Flight(Base):
     __tablename__ = 'flight'
     
     flight_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    route_id = Column(UUID(as_uuid=True), ForeignKey("route.route_id"))
+    route_id = Column(UUID(as_uuid=True), ForeignKey("route.route_id"), nullable=False)
     flight_status = Column(SQLEnum(FlightStatus), default=FlightStatus.SCHEDULED)
-    aircraft_id = Column(UUID(as_uuid=True), ForeignKey("aircraft.aircraft_id"))
+    aircraft_id = Column(UUID(as_uuid=True), ForeignKey("aircraft.aircraft_id"), nullable=False)
     arrival_time = Column(DateTime)
-    dept_time = Column(DateTime)
+    departure_time = Column(DateTime)
     
 
 

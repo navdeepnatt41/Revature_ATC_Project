@@ -16,10 +16,10 @@ class Aircraft(Base):
 
     #airline_designator = Column(String, ForeignKey("airline.airline_designator"), nullable=False)
 
-    manufacturer = Column(String, nullable=True)
-    aircraft_model = Column(String, nullable=True)
-    current_distance = Column(Float, nullable=False)
-    maintenance_interval = Column(Float, nullable=False)
-    aircraft_status = Column(SQLEnum(AircraftStatus), default= AircraftStatus.AVAILABLE)
+    manufacturer = Column(String)
+    aircraft_model = Column(String)
+    current_distance = Column(Float)
+    maintenance_interval = Column(Float)
+    aircraft_status = Column(SQLEnum(AircraftStatus))
 
-    aircraft_location = Column(UUID(as_uuid=True), ForeignKey('airport.airport_code'))
+    aircraft_location = Column(String, ForeignKey('airport.airport_code'), nullable=False)

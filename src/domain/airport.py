@@ -7,9 +7,9 @@ class Airport(Base):
   __tablename__ = 'airport'
 
   airport_code = Column(String, primary_key= True)
-  airport_name = Column(String, nullable= False)
-  airport_country = Column(String, nullable= False)
-  airport_city = Column(String, nullable= False)
-  airport_address = Column(String, nullable= False)
-  longitude = Column(String, nullable= False)
-  latitude = Column(String, nullable= False)
+  airport_name = Column(String)
+  airport_country = Column(String)
+  airport_city = Column(String)
+  airport_address = Column(String)
+  longitude = Column(String)
+  latitude = Column(String)
