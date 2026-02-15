@@ -1,14 +1,16 @@
 from typing import Optional
 from uuid import UUID
 from src.domain.flight_crew import FlightCrew
-from src.repositories.flight_crew_repository_protocol import FlightCrewRepositoryProtocol
+from src.repositories.flight_crew_repository_protocol import (
+    FlightCrewRepositoryProtocol,
+)
 from sqlalchemy.orm import Session
 
 
 class FlightCrewRepository(FlightCrewRepositoryProtocol):
     def __init__(self, session: Session):
         self.session = session
-        
+
     def create(self, flight_crew: FlightCrew) -> FlightCrew:
         self.session.add(flight_crew)
         self.session.commit()
@@ -18,8 +20,8 @@ class FlightCrewRepository(FlightCrewRepositoryProtocol):
     def get(self, flight_id: UUID, employee_id: UUID) -> Optional[FlightCrew]:
         return (
             self.session.query(FlightCrew)
-            .filter(FlightCrew.flight_id == flight_id,
-                    FlightCrew.employee_id == employee_id
+            .filter(
+                FlightCrew.flight_id == flight_id, FlightCrew.employee_id == employee_id
             )
             .one_or_none()
         )
@@ -27,7 +29,8 @@ class FlightCrewRepository(FlightCrewRepositoryProtocol):
     def get_by_flight(self, flight_id: UUID) -> list[FlightCrew]:
         return (
             self.session.query(FlightCrew)
-            .filter(FlightCrew.flight_id == flight_id,
+            .filter(
+                FlightCrew.flight_id == flight_id,
             )
             .all()
         )
@@ -44,11 +47,10 @@ class FlightCrewRepository(FlightCrewRepositoryProtocol):
             raise ValueError("Flight Crew assignment not found")
 
         return existing
-    
+
     def delete(self, flight_id: UUID, employee_id: UUID) -> None:
         flight_crew = self.session.get(FlightCrew, (flight_id, employee_id))
         if flight_crew is None:
             raise ValueError("Flight Crew assignment not found")
         self.session.delete(flight_crew)
         self.session.commit()
-        

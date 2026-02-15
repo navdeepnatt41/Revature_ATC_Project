@@ -1,11 +1,14 @@
 from typing import Optional
 from uuid import UUID
 
-from src.domain.in_flight_employee import InFlightEmployee, EmployeePosition, InFlightStatus
-from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
-
-
-
+from src.domain.in_flight_employee import (
+    InFlightEmployee,
+    EmployeePosition,
+    InFlightStatus,
+)
+from src.repositories.in_flight_employee_repository_protocol import (
+    InFlightEmployeeRepositoryProtocol,
+)
 
 
 class InFlightEmployeeService:
@@ -22,7 +25,9 @@ class InFlightEmployeeService:
     def listall(self) -> list[InFlightEmployee]:
         return self.repo.list_all()
 
-    def update_status(self, employee: InFlightEmployee, status: InFlightStatus) -> InFlightEmployee:
+    def update_status(
+        self, employee: InFlightEmployee, status: InFlightStatus
+    ) -> InFlightEmployee:
         return self.repo.update_status(employee, status)
 
     def delete(self, employee_id: UUID) -> None:
@@ -40,5 +45,8 @@ class InFlightEmployeeService:
             raise ValueError("position must be an EmployeePosition")
         if employee.status not in ALLOWED_STATUSES:
             raise ValueError("status must be one of: Available, Scheduled")
-        if employee.employee_id.get() and employee.supervised == employee.employee_id.get():
+        if (
+            employee.employee_id.get()
+            and employee.supervised == employee.employee_id.get()
+        ):
             raise ValueError("employee cannot supervise themselves")

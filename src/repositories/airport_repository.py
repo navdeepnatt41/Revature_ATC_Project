@@ -7,28 +7,28 @@ from src.repositories.airport_repository_protocol import AirportRepositoryProtoc
 class AirportRepository(AirportRepositoryProtocol):
     def __init__(self, session: Session):
         self.session = session
-    
+
     def create(self, airport: Airport) -> Airport:
         self.session.add(airport)
         self.session.commit()
         self.session.refresh(airport)
         return airport
-    
-    def get(self, airport_code: str) -> Optional[Airport]: #returning one employee
-        return(
+
+    def get(self, airport_code: str) -> Optional[Airport]:  # returning one employee
+        return (
             self.session.query(Airport)
             .filter(Airport.airport_code == airport_code)
-            .one_or_none() #returning None if none is found
+            .one_or_none()  # returning None if none is found
         )
 
     def list_all(self) -> list[Airport]:
-        return self.session.query(Airport).all() 
+        return self.session.query(Airport).all()
 
     def update(self, airport: Airport) -> Airport:
         existing = self.session.get(Airport, airport.airport_code)
         if existing is None:
             raise ValueError("Airport not found")
-        #dont need to update primary key(airport_code)
+        # dont need to update primary key(airport_code)
         existing.airport_name = airport.airport_name
         existing.airport_country = airport.airport_country
         existing.airport_city = airport.airport_city

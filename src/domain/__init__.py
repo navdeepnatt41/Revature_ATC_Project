@@ -4,3 +4,12 @@ from .flight_crew import FlightCrew
 from .flight import Flight
 from .in_flight_employee import InFlightEmployee
 from .route import Route
+
+__all__ = [
+    "Aircraft",
+    "Airport",
+    "FlightCrew",
+    "Flight",
+    "InFlightEmployee",
+    "Route",
+]

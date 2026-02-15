@@ -2,10 +2,12 @@ import random
 from faker import Faker
 from domain.in_flight_employee import InFlightEmployee, EmployeePosition
 
-
 fake = Faker()
 
-def generate_inflight_employee(iata_codes: list[str], supervisor_id=None) -> list[InFlightEmployee]:
+
+def generate_inflight_employee(
+    iata_codes: list[str], supervisor_id=None
+) -> list[InFlightEmployee]:
     crew_members: list[InFlightEmployee] = []
     for _ in range(10):
         crew_member = InFlightEmployee(
@@ -15,7 +17,7 @@ def generate_inflight_employee(iata_codes: list[str], supervisor_id=None) -> lis
             l_name=fake.last_name(),
             position=random.choice(list(EmployeePosition)),
             status=random.choice(["Active", "Inactive", "Terminated"]),
-            #supervisor_id can be None but set to another employee's UUID when available
+            # supervisor_id can be None but set to another employee's UUID when available
             supervised=supervisor_id,
         )
         crew_members.append(crew_member)

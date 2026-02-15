@@ -4,10 +4,12 @@ from sqlalchemy.dialects.postgresql import UUID
 from src.base import Base
 from enum import Enum
 
+
 class AircraftStatus(Enum):
     AVAILABLE = "AVAILABLE"
     DEPLOYED = "DEPLOYED"
     AOG = "MAINTENANCE"
+
 
 class Aircraft(Base):
     __tablename__ = "aircraft"
@@ -20,4 +22,6 @@ class Aircraft(Base):
     maintenance_interval = Column(Float)
     aircraft_status = Column(SQLEnum(AircraftStatus))
 
-    aircraft_location = Column(String, ForeignKey('airport.airport_code'), nullable=False)
+    aircraft_location = Column(
+        String, ForeignKey("airport.airport_code"), nullable=False
+    )

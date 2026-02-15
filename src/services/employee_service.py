@@ -1,2 +1,4 @@
-from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
+from src.repositories.in_flight_employee_repository_protocol import (
+    InFlightEmployeeRepositoryProtocol,
+)
 

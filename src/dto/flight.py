@@ -1,22 +1,29 @@
 from uuid import UUID
-from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
+from pydantic import BaseModel
+
+class FlightStatus(str, Enum):
+    SCHEDULED = "SCHEDULED"
+    IN_FLIGHT = "IN-FLIGHT"
+    ARRIVED = "ARRIVED"
+    DELAYED = "DELAYED"
+    CANCELLED = "CANCELLED"
 
 class FlightCreate(BaseModel):
-    flight_id: UUID # TODO: don't need UUID for Create(?)
     route_id: UUID
-    flight_status: str
+    flight_status: FlightStatus = FlightStatus.SCHEDULED
     aircraft_id: UUID
-    arrival_time: datetime
-    dept_time: datetime
+    arrival_time: datetime | None = None
+    departure_time: datetime | None = None
 
 class FlightRead(BaseModel):
     flight_id: UUID
     route_id: UUID
-    flight_status: str
+    flight_status: FlightStatus
     aircraft_id: UUID
-    arrival_time: datetime
-    dept_time: datetime
+    arrival_time: datetime | None = None
+    departure_time: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -25,6 +32,6 @@ class FlightRead(BaseModel):
             "route_id": ...,
             "flight_status": ...,
             "aircraft_id": ...,
-            "arrival_tie": ...,
-            "dept_time": ...,
+            "arrival_time": ...,
+            "departure_time": ...,
         }
