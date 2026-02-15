@@ -14,8 +14,6 @@ class Aircraft(Base):
 
     aircraft_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
-    #airline_designator = Column(String, ForeignKey("airline.airline_designator"), nullable=False)
-
     manufacturer = Column(String)
     aircraft_model = Column(String)
     current_distance = Column(Float)

@@ -61,3 +61,24 @@ def get_route_repository(db: Session = Depends(get_db)) -> RouteRepository:
 #Service Getters
 # ------------------------------------------------------------------------------------------------
 
+def get_flight_operation_service(
+    aircraft_repo: AircraftRepository = Depends(get_aircraft_repository),
+    airport_repo: AirportRepository = Depends(get_airport_repository),
+    flight_crew_repo: FlightCrewRepository = Depends(get_flight_crew_repository),
+    flight_repo: FlightRepository = Depends(get_flight_repository),
+    in_flight_employee_repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository),
+    route_repo: RouteRepository = Depends(get_route_repository)
+) -> FlightOperationService:
+    return FlightOperationService(aircraft_repo, airport_repo, flight_crew_repo, flight_repo, in_flight_employee_repo, route_repo)
+
+
+
+#
+# Endpoints
+#
+
+@app.get("/route")
+def test(
+    svc : FlightOperationService = Depends(get_flight_operation_service)
+):
+    return svc.route_list_all()

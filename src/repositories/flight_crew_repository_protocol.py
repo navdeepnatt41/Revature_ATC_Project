@@ -9,6 +9,9 @@ class FlightCrewRepositoryProtocol(Protocol):
     def get(self, flight_id: UUID, employee_id: UUID) -> Optional[FlightCrew]:
         ...
 
+    def get_by_flight(self, flight_id: UUID) -> list[FlightCrew]:
+        ...
+
     def list_all(self) -> list[FlightCrew]:
         ...
 

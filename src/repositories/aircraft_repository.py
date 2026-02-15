@@ -30,8 +30,10 @@ class AircraftRepository(AircraftRepositoryProtocol):
         if cur_aircraft is None:
             raise ValueError("Aircraft not found")
         cur_aircraft.aircraft_model = aircraft.aircraft_model
-        cur_aircraft.airline_designator = aircraft.airline_designator
         cur_aircraft.manufacturer = aircraft.manufacturer
+        cur_aircraft.current_distance = aircraft.current_distance
+        cur_aircraft.maintenance_interval = aircraft.maintenance_interval
+        cur_aircraft.aircraft_status = aircraft.aircraft_status
         self.session.commit()
         self.session.refresh(cur_aircraft)
         return cur_aircraft

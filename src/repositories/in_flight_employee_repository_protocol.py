@@ -19,7 +19,7 @@ class InFlightEmployeeRepositoryProtocol(Protocol):
     def list_all(self) -> list[InFlightEmployee]:
         ...
 
-    def update_status(self, employee: InFlightEmployee, status: InFlightStatus) -> InFlightEmployee:
+    def update_status_location(self, employee: InFlightEmployee, status: InFlightStatus, location: str) -> InFlightEmployee:
         ...
 
     def delete(self, employee_id: UUID) -> None:

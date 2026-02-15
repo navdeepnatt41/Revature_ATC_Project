@@ -29,6 +29,7 @@ class InFlightEmployeeService:
         self.repo.delete(employee_id)
 
     def _validate_employee(self, employee: InFlightEmployee, require_id: bool) -> None:
+        ALLOWED_STATUSES = {InFlightStatus.AVAILABLE, InFlightStatus.SCHEDULED}
         if require_id and not employee.employee_id.get():
             raise ValueError("employee_id is required for update")
         if not employee.IATA_code:
