@@ -37,7 +37,7 @@ class FlightRepository(FlightRepositoryProtocol):
         existing.aircraft_id = flight.aircraft_id
         existing.flight_status = flight.flight_status
         existing.arrival_time = flight.arrival_time
-        existing.dept_time = flight.dept_time
+        existing.departure_time = flight.departure_time
 
         self.session.commit()
         self.session.refresh(existing)

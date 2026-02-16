@@ -49,11 +49,7 @@ class FlightOperationService:
     # ===================================================================
     def route_create(self, origin_airport_code: str, destination_airport_code: str) -> Route:
         self._validate_route(origin_airport_code, destination_airport_code, require_id=False)
-        route = Route(
-            origin_airport_code=origin_airport_code,
-            destination_airport_code=destination_airport_code,
-        )
-        return self.route_repo.create(route)
+        return self.route_repo.create(origin_airport_code, destination_airport_code)
 
     def route_get(self, route_id: UUID) -> Optional[Route]:
         route = self.route_repo.get_by_id(route_id)
@@ -101,7 +97,7 @@ class FlightOperationService:
         if self.airport_repo.get(destination_airport_code) is None:
             raise NotFoundException("Destination airport cannot be found")
         # Check if this route exists already:
-        existing_route = self.route_repo.get_by_airports(origin_airport_code, destination_airport_code)
+        existing_route = self.route_repo.get_by_airport_codes(origin_airport_code, destination_airport_code)
         if existing_route:
             raise EntityAlreadyExistsException("Proposed route already exists")
 
@@ -115,7 +111,11 @@ class FlightOperationService:
     def update_status(
         self, employee: InFlightEmployee, status: InFlightStatus
     ) -> InFlightEmployee:
-        return self.in_flight_employee_repo.update_status(employee, status)
+        return self.in_flight_employee_repo.update_status_location(
+            employee,
+            status,
+            employee.employee_location,
+        )
 
     def get(self, employee_id: UUID) -> Optional[InFlightEmployee]:
         return self.in_flight_employee_repo.get(employee_id)
@@ -138,7 +138,7 @@ class FlightOperationService:
 
         aircraft = self.aircraft_repo.get(flight.aircraft_id)
         crew = self.flight_crew_repo.get_by_flight(flight_id)
-        route = self.route_repo.get(flight.route_id)
+        route = self.route_repo.get_by_id(flight.route_id)
 
         flight.flight_status = FlightStatus.ARRIVED
         self.flight_repo.update(flight)
@@ -175,7 +175,7 @@ class FlightOperationService:
         arrival: datetime,
         departure: datetime
     ) -> Flight:
-        route = self.route_repo.get(route_id)
+        route = self.route_repo.get_by_id(route_id)
         if route is None:
             raise NotFoundException("Route cannot be found")
         
@@ -236,13 +236,14 @@ class FlightOperationService:
             raise NotFoundException("Aircraft cannot be found")
 
         flight.aircraft_id = aircraft_id
-        return self.flight_repo.update(flight)        
+        return self.flight_repo.update(flight)  
+          
     def schedule_employees(self, flight_id: UUID, employee_ids: list[UUID]) -> list[FlightCrew]:
         flight = self.flight_repo.get(flight_id)
         if flight is None:
             raise NotFoundException("Flight cannot be found")
 
-        route = self.route_repo.get(flight.route_id)
+        route = self.route_repo.get_by_id(flight.route_id)
         if route is None:
             raise NotFoundException("Route for flight cannot be found")
 
@@ -314,4 +315,7 @@ class FlightOperationService:
     
     def repair_aircraft(self, flight: Flight, employees: list[InFlightEmployee]):
         pass
-    # ===================================================================
+    # ===================================================================)
+        ## TODO
+        ## route is not defined
+        ## TODOs

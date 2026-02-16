@@ -28,11 +28,11 @@ from src.dto.flight_crew import FlightCrewRead, FlightCrewScheduleRequest
 # Error Handling
 # ---------------------------------------------
 # ENABLE TO LOG
-# from src.loggin_config import setup_logging
-# import logging
+from src.loggin_config import setup_logging
+import logging
 
-# setup_logging()
-# logger = logging.getLogger(__name__)
+setup_logging()
+logger = logging.getLogger(__name__)
 # ---------------------------------------------
 
 app = FastAPI()
@@ -96,6 +96,7 @@ def get_flight_operation_service(
 @app.get("/status")
 def status():
     return {"Status": "Ok!"}
+
 # Tentatively completed endpoint
 @app.get("/aircraft/available/")
 def available_aircraft_at_airport(airport_code: str, svc: FlightOperationService =  Depends(get_flight_operation_service)):
@@ -112,7 +113,7 @@ def availabe_employees_at_airport(airport_code: str, svc: FlightOperationService
 # Flight Operations Manager ENDPOINTS
 # ==================================================================================================
 
-@app.put("/flight/{flight_id}/delay")
+@app.put("/flight/{flight_id}/delay", response_model=FlightRead)
 def update_flight_delay(flight_id: UUID, new_status: str, extra_minutes: int,  svc: FlightOperationService = Depends(get_flight_operation_service)):
     try:
         new_status_enum = FlightStatus(new_status)
@@ -136,7 +137,8 @@ def update_flight_delay(flight_id: UUID, new_status: str, extra_minutes: int,  s
 # Schedule ENDPOINTS
 # ==================================================================================================
 
-@app.post("/flight/schedule", response_model = FlightRead)
+# Tentatively working
+@app.post("/flight/schedule/", response_model = FlightRead)
 def schedule_flight(
     route_id: UUID,
     aircraft_id: UUID,
@@ -173,44 +175,46 @@ def schedule_flight_crew(
     except AppErrorException as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/flight/launch") 
+# Tentatively completed
+@app.post("/flight/launch/", response_model=FlightRead) 
 def launch_flight(
     flight_id: UUID,
     svc: FlightOperationService = Depends(get_flight_operation_service)
 ):
-    try:
-        # Check if flight has a flight crew
-        flight_crew = svc.flight_crew_repo.get_by_flight_id(flight_id)
-        if not flight_crew:
-            raise PermissionDeniedException("Flight cannot depart without a flight crew assigned")
-        
-        # Check if flight crew has required positions
-        required_positions = {
-            EmployeePosition.CAPTAIN,
-            EmployeePosition.COPILOT,
-            EmployeePosition.FLIGHT_MANAGER,
-            EmployeePosition.FLIGHT_ATTENDANT
-        }
-        
-        crew_positions = {member.position for member in flight_crew.members}
-        
-        if not required_positions.issubset(crew_positions):
-            missing_positions = required_positions - crew_positions
-            raise PermissionDeniedException(
-                f"Flight cannot depart. Missing positions: {', '.join([p.value for p in missing_positions])}"
-            )
-        
-        # Update flight status to DEPARTED
-        updated_flight = svc.update_flight_status(flight_id, FlightStatus.IN_FLIGHT)
-        
-        return updated_flight
-        
-    except PermissionDeniedException as e:
-        raise HTTPException(status_code=403, detail=str(e))
-    except NotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="An error occurred while launching flight")
+    # Check if flight has a flight crew
+    flight_crew = svc.flight_crew_repo.get_by_flight(flight_id)
+    if not flight_crew:
+        raise PermissionDeniedException("Flight cannot depart without a flight crew assigned")
+    
+    # Check if flight crew has required positions
+    required_positions = {
+        EmployeePosition.CAPTAIN,
+        EmployeePosition.COPILOT,
+        EmployeePosition.FLIGHT_MANAGER,
+        EmployeePosition.FLIGHT_ATTENDANT
+    }
+    
+    crew_positions: set = set()
+    for assignment in flight_crew:
+        employee = svc.in_flight_employee_repo.get(assignment.employee_id)
+        if employee is None:
+            raise NotFoundException(f"Employee with ID {assignment.employee_id} not found")
+        crew_positions.add(employee.position)
+    
+    if not required_positions.issubset(crew_positions):
+        missing_positions = required_positions - crew_positions
+        raise PermissionDeniedException(
+            f"""
+            Flight cannot depart. Missing positions: {', '.join([p.value for p in missing_positions])}\n\n\n\n
+            Required Positionss: {required_positions}\n\n\n\n
+            Crew Positions: {crew_positions}
+            """
+        )
+    
+    # Update flight status to DEPARTED
+    updated_flight = svc.update_flight_status(flight_id, FlightStatus.IN_FLIGHT)
+    return updated_flight
+    
     
 
 
@@ -272,7 +276,7 @@ def delete_route(route_id: UUID, authorization_code: str, svc: FlightOperationSe
 # ==================================================================================================
 # Cancelling Flights
 # ==================================================================================================
-@app.put("/flight/{flight_id}/cancel")
+@app.put("/flight/{flight_id}/cancel", response_model=FlightRead)
 def update_flight_cancel(
     flight_id: UUID,
     svc: FlightOperationService = Depends(get_flight_operation_service),
