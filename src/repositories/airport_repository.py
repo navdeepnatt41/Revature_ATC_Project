@@ -3,8 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.domain.airport import Airport
-from src.repositories.airport_repository_protocol import \
-    AirportRepositoryProtocol
+from src.repositories.airport_repository_protocol import AirportRepositoryProtocol
 
 
 class AirportRepository(AirportRepositoryProtocol):

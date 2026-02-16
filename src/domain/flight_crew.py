@@ -1,6 +1,7 @@
 """
 Defines the SQLAlchemy ORM  for the FlightCrew table
 """
+
 import uuid
 from dataclasses import dataclass
 
@@ -10,16 +11,18 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from src.base import Base
 
+
 @dataclass
 class FlightCrew(Base):
     """
-    The FlightCrew ORM object for the FlightCrew table. 
+    The FlightCrew ORM object for the FlightCrew table.
     FlightCrew is actually a junction table.
 
     Attributes:
         flight_id (UUID): The UUID which marks an individual flight event
         employee_id (UUID): The UUID which marks an employee
     """
+
     __tablename__ = "flight_crew"
 
     flight_id: Mapped[uuid.UUID] = mapped_column(

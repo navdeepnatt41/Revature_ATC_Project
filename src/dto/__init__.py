@@ -1,5 +1,5 @@
 """
-The dto module defines the Pydantic models for all of the domain objects. It will serve to verify 
+The dto module defines the Pydantic models for all of the domain objects. It will serve to verify
 types for attributes, do type conversions, and enables serialization/de-serialization.
 """
 
@@ -20,10 +20,9 @@ __all__ = [
     "FlightCrewRead",
     "FlightCrewScheduleRequest",
     "FlightCreate",
-    "FlightRead"
-    "FlightStatus",
+    "FlightRead" "FlightStatus",
     "EmployeePosition",
     "InFlightStatus",
     "InFlightEmployeeCreate",
-    "InFlightEmployeeRead"
+    "InFlightEmployeeRead",
 ]

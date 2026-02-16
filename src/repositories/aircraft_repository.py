@@ -6,8 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.domain.aircraft import Aircraft, AircraftStatus
 from src.domain.airport import Airport
-from src.repositories.aircraft_repository_protocol import \
-    AircraftRepositoryProtocol
+from src.repositories.aircraft_repository_protocol import AircraftRepositoryProtocol
 
 
 class AircraftRepository(AircraftRepositoryProtocol):
@@ -50,9 +49,11 @@ class AircraftRepository(AircraftRepositoryProtocol):
         self.session.delete(aircraft)
         self.session.commit()
 
-    def availabe_aircraft_by_airport(self, airport_code: str) -> list[Airport]:
+    def available_aircraft_by_airport(self, airport_code: str) -> list[Airport]:
         return self.session.scalars(
             select(Aircraft)
-            .where(Aircraft.aircraft_location == airport_code)
-            .where(Aircraft.aircraft_status == AircraftStatus.AVAILABLE)
+            .where(
+                Aircraft.aircraft_status == AircraftStatus.AVAILABLE,
+                Aircraft.aircraft_location == airport_code 
+            )
         ).all()

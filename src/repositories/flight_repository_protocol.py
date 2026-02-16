@@ -1,4 +1,5 @@
 from typing import Optional, Protocol
+from datetime import datetime
 from uuid import UUID
 
 from src.domain.flight import Flight

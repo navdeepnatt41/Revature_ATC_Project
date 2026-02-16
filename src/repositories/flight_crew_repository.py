@@ -4,8 +4,9 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from src.domain.flight_crew import FlightCrew
-from src.repositories.flight_crew_repository_protocol import \
-    FlightCrewRepositoryProtocol
+from src.repositories.flight_crew_repository_protocol import (
+    FlightCrewRepositoryProtocol,
+)
 
 
 class FlightCrewRepository(FlightCrewRepositoryProtocol):

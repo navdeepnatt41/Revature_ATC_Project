@@ -24,6 +24,7 @@ class EmployeePosition(Enum):
         FLIGHT_MANAGER (str): The onboard flight manager
         FLIGHT_ATTENDANT (str): The flight attendant
     """
+
     CAPTAIN = "CAPTAIN"
     COPILOT = "COPILOT"
     FLIGHT_MANAGER = "FLIGHT_MANAGER"
@@ -39,6 +40,7 @@ class InFlightStatus(Enum):
         AVAILABLE (str): The employee can be scheduled for a flight
         SCHEDULED (str): The employee is already scheduled and can not be re-scheduled
     """
+
     AVAILABLE = "AVAILABLE"
     SCHEDULED = "SCHEDULED"
 
@@ -57,14 +59,19 @@ class InFlightEmployee(Base):
                             this column is simply the employee's)
         employee_locaiton (str): The IATA code for the airport the employee currently is at
     """
+
     __tablename__ = "in_flight_employee"
 
-    employee_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employee_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     first_name: Mapped[str] = mapped_column(String)
     last_name: Mapped[str] = mapped_column(String)
     position: Mapped[EmployeePosition] = mapped_column(SQLEnum(EmployeePosition))
     employee_status: Mapped[InFlightStatus] = mapped_column(SQLEnum(InFlightStatus))
-    supervisor: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey("in_flight_employee.employee_id"))
+    supervisor: Mapped[uuid.UUID] = mapped_column(
+        UUID, ForeignKey("in_flight_employee.employee_id")
+    )
     employee_location: Mapped[str] = mapped_column(
         String, ForeignKey("airport.airport_code"), nullable=False
     )

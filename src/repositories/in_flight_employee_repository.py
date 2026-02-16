@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from src.domain.airport import Airport
 from src.domain.in_flight_employee import InFlightEmployee, InFlightStatus
-from src.repositories.in_flight_employee_repository_protocol import \
-    InFlightEmployeeRepositoryProtocol
+from src.repositories.in_flight_employee_repository_protocol import (
+    InFlightEmployeeRepositoryProtocol,
+)
 
 
 class InFlightEmployeeRepository(InFlightEmployeeRepositoryProtocol):

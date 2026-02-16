@@ -19,8 +19,7 @@ from src.repositories.airline_repository import AirlineRepository
 from src.repositories.airport_repository import AirportRepository
 from src.repositories.flight_crew_repository import FlightCrewRepository
 from src.repositories.flight_repository import FlightRepository
-from src.repositories.in_flight_employee_repository import \
-    InFlightEmployeeRepository
+from src.repositories.in_flight_employee_repository import InFlightEmployeeRepository
 from src.repositories.operates_repository import OperatesRepository
 from src.repositories.route_repository import RouteRepository
 

@@ -17,7 +17,7 @@ from src.domain.route import Route
 
 from src.dto.flight import FlightRead
 from src.dto.flight_crew import FlightCrewRead, FlightCrewScheduleRequest
-from src.dto.aircraft import AircraftBase
+from src.dto.aircraft import AircraftBase, AircraftRead
 #
 # Error Handling
 # ---------------------------------------------
@@ -31,11 +31,14 @@ from src.repositories.in_flight_employee_repository import \
     InFlightEmployeeRepository
 from src.repositories.route_repository import RouteRepository
 # Change the import if we split up service
-from src.services.flight_operation_service import FlightOperationService
+from src.services.aircraft_service import AircraftService
+from src.services.flight_service import FlightService
+from src.services.in_flight_employee_service import InFlightEmployeeService
+from src.services.route_service import RouteService
 
-setup_logging()
-logger = logging.getLogger(__name__)
-# ---------------------------------------------
+# setup_logging()
+# logger = logging.getLogger(__name__)
+# # ---------------------------------------------
 
 app = FastAPI()
 
@@ -75,24 +78,43 @@ def get_route_repository(db: Session = Depends(get_db)) -> RouteRepository:
 # Service Getters
 # ==================================================================================================
 
-
-def get_flight_operation_service(
+def get_aircraft_service(
     aircraft_repo: AircraftRepository = Depends(get_aircraft_repository),
-    airport_repo: AirportRepository = Depends(get_airport_repository),
+    airport_repo: AirportRepository = Depends(get_airport_repository)
+) -> AircraftService:
+    return AircraftService(aircraft_repo, airport_repo)
+
+def get_in_flight_employee_service(
+    employee_repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository)
+) -> InFlightEmployeeService:
+    return InFlightEmployeeService(employee_repo)
+
+def get_flight_service(
+    aircraft_repo: AircraftRepository = Depends(get_aircraft_repository),
     flight_crew_repo: FlightCrewRepository = Depends(get_flight_crew_repository),
     flight_repo: FlightRepository = Depends(get_flight_repository),
-    in_flight_employee_repo: InFlightEmployeeRepository = Depends(
-        get_in_flight_employee_repository
-    ),
+    in_flight_employee_repo: InFlightEmployeeRepository = Depends(get_in_flight_employee_repository),
     route_repo: RouteRepository = Depends(get_route_repository),
-) -> FlightOperationService:
-    return FlightOperationService(
+) -> FlightService:
+    return FlightService(
         aircraft_repo,
-        airport_repo,
         flight_crew_repo,
         flight_repo,
         in_flight_employee_repo,
-        route_repo,
+        route_repo
+    )
+
+def get_route_service(
+    airport_repo: AirportRepository = Depends(get_airport_repository),
+    flight_crew_repo: FlightCrewRepository = Depends(get_flight_crew_repository),
+    flight_repo: FlightRepository = Depends(get_flight_repository),
+    route_repo: RouteRepository = Depends(get_route_repository),
+) -> RouteService:
+    return RouteService(
+        airport_repo,
+        flight_crew_repo,
+        flight_repo,
+        route_repo
     )
 
 
@@ -106,22 +128,23 @@ def status():
     return {"Status": "Ok!"}
 
 
-# Tentatively completed endpoint
-@app.get("/aircraft/available/")
+# 
+@app.get("/aircraft/available/{airport_code}", response_model=list[AircraftRead])
 def available_aircraft_at_airport(
     airport_code: str,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: AircraftService = Depends(get_aircraft_service)
 ):
-    return {"aircraft": svc.aircraft_repo.availabe_aircraft_by_airport(airport_code)}
-
+    return svc.available_aircraft_at_airport(airport_code)
 
 # Tentatively completed endpoint
+# TODO
+# --- Refactor to use in_flight_employee_service
 @app.get("/employee/available/{airport_code}")
 def availabe_employees_at_airport(
     airport_code: str,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: InFlightEmployeeService = Depends(get_in_flight_employee_service)
 ):
-    return svc.in_flight_employee_repo.available_employees_at_airport(airport_code)
+    return svc.available_employees_at_airport(airport_code)
 
 
 # ==================================================================================================
@@ -133,21 +156,21 @@ def availabe_employees_at_airport(
 def update_flight_delay(
     flight_id: UUID,
     extra_minutes: int,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
-    print(f"ID: {flight_id}\bMinutes: {extra_minutes}")
-    updated_flight = svc.delay_flight(flight_id, extra_minutes)
-    return updated_flight
-#    try:
-        # return updated_flight
-
-#    except PermissionDeniedException as e:
-#        raise HTTPException(status_code=403, detail=str(e))
-#    except Exception as e:
-#        raise HTTPException(
-#            status_code=500, detail="An error occurred while updating flight status"
-#        )
-
+    try:
+        return svc.delay_flight(flight_id, extra_minutes)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except AppErrorException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except PermissionDeniedException as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail="An error occurred while updating flight status"
+        )
+    
 
 # ==================================================================================================
 
@@ -156,13 +179,15 @@ def update_flight_delay(
 # ==================================================================================================
 
 # Tentatively working
+# TODO
+# --- Refactor to use flight service
 @app.post("/flight/schedule/", response_model=FlightRead)
 def schedule_flight(
     route_id: UUID,
     aircraft_id: UUID,
     departure: datetime,
     arrival: datetime,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         return svc.schedule_flight(
@@ -179,11 +204,12 @@ def schedule_flight(
         raise HTTPException(status_code=400, detail=str(e))
 
 # Tentatively working
+# Refactor to use flight service
 @app.post("/flight/{flight_id}/crew", response_model=list[FlightCrewRead])
 def schedule_flight_crew(
     flight_id: UUID,
     payload: FlightCrewScheduleRequest,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         return svc.schedule_employees(flight_id, payload.employee_ids)
@@ -198,51 +224,28 @@ def schedule_flight_crew(
 # Tentatively completed
 @app.post("/flight/launch/", response_model=FlightRead)
 def launch_flight(
-    flight_id: UUID, svc: FlightOperationService = Depends(get_flight_operation_service)
+    flight_id: UUID, 
+    svc: FlightService = Depends(get_flight_service)
 ):
-    # Check if flight has a flight crew
-    flight_crew = svc.flight_crew_repo.get_by_flight(flight_id)
-    if not flight_crew:
-        raise PermissionDeniedException(
-            "Flight cannot depart without a flight crew assigned"
-        )
-
-    # Check if flight crew has required positions
-    required_positions = {
-        EmployeePosition.CAPTAIN,
-        EmployeePosition.COPILOT,
-        EmployeePosition.FLIGHT_MANAGER,
-        EmployeePosition.FLIGHT_ATTENDANT,
-    }
-
-    crew_positions: set = set()
-    for assignment in flight_crew:
-        employee = svc.in_flight_employee_repo.get(assignment.employee_id)
-        if employee is None:
-            raise NotFoundException(
-                f"Employee with ID {assignment.employee_id} not found"
-            )
-        crew_positions.add(employee.position)
-
-    if not required_positions.issubset(crew_positions):
-        missing_positions = required_positions - crew_positions
-        raise PermissionDeniedException(f"""
-            Flight cannot depart. Missing positions: {', '.join([p.value for p in missing_positions])}\n\n\n\n
-            Required Positionss: {required_positions}\n\n\n\n
-            Crew Positions: {crew_positions}
-            """)
-
-    # Update flight status to IN-FLIGHT
-    updated_flight = svc.flight_repo.update_flight_status_in_flight(flight_id)
-    return updated_flight
+    try:
+        return svc.launch_flight(flight_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except PermissionDeniedException as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 # Tentatively completed
 @app.patch("/flight/land/", response_model=AircraftBase)
 def land_flight(
     flight_id: UUID, 
-    svc: FlightOperationService = Depends(get_flight_operation_service)
+    svc: FlightService = Depends(get_flight_service)
 ):
-    return svc.confirm_flight_landed(flight_id)
+    try:
+        return svc.confirm_flight_landed(flight_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except AppErrorException as e:
+        raise HTTPException(status_code=400, detail=str(e))
 # ==================================================================================================
 
 # ==================================================================================================
@@ -253,16 +256,18 @@ def land_flight(
 
 
 # Tentatively completed endpoint
+# --- Refactor to use route service
 @app.get("/route/all")
-def list_all_routes(svc: FlightOperationService = Depends(get_flight_operation_service)):
+def list_all_routes(svc: FlightService = Depends(get_flight_service)):
     return svc.route_list_all()
 
 
 # Tentatively compoleted endpoint
+# --- Refactor to use route service
 @app.get("/route/{route_id}")
 def get_route_by_id(
     route_id: UUID,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         return svc.route_get(route_id)  # fixed service method name
@@ -271,11 +276,12 @@ def get_route_by_id(
 
 
 # Tentatively completed
+# --- Refactor to use route service
 @app.post("/route/")
 def create_route(
     origin_airport_code: str,
     destination_airport_code: str,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         return svc.route_create(origin_airport_code, destination_airport_code)
@@ -286,9 +292,10 @@ def create_route(
 
 
 # Tentaivley completed
+# --- Refactor to use route service
 @app.get("/route/deletion_proposal/{route_id}")
 def route_deletion_proposal(
-    route_id: str, svc: FlightOperationService = Depends(get_flight_operation_service)
+    route_id: str, svc: FlightService = Depends(get_flight_service)
 ):
     return svc.route_repo.deletion_proposal(route_id)
 
@@ -296,11 +303,12 @@ def route_deletion_proposal(
 AUTHORIZATION = "authorized"
 
 # Tentatively works
+# --- Refactor to use route service
 @app.delete("/route/{route_id}")
 def delete_route(
     route_id: UUID,
     authorization_code: str,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     if authorization_code != AUTHORIZATION:
         raise HTTPException(
@@ -316,7 +324,7 @@ def delete_route(
 @app.put("/flight/cancel", response_model=FlightRead)
 def update_flight_cancel(
     flight_id: UUID,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         return svc.cancel_flight(flight_id)
@@ -326,11 +334,6 @@ def update_flight_cancel(
         raise HTTPException(status_code=403, detail=str(e))
     except AppErrorException as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception:
-        raise HTTPException(
-            status_code=500,
-            detail="An error occurred while cancelling flight",
-        )
 # ==================================================================================================
 
 # ==================================================================================================
@@ -344,7 +347,7 @@ def update_flight_cancel(
 def change_aircraft_for_flight(
     flight_id: UUID,
     aircraft_id: UUID,
-    svc: FlightOperationService = Depends(get_flight_operation_service),
+    svc: FlightService = Depends(get_flight_service),
 ):
     try:
         updated_flight = svc.change_aircraft_for_flight(flight_id, aircraft_id)
@@ -361,15 +364,16 @@ def change_aircraft_for_flight(
 @app.patch("/aircraft/fix/", response_model=AircraftBase)
 def fix_aircraft(
     aircraft_id: UUID, 
-    svc: FlightOperationService = Depends(get_flight_operation_service)
+    svc: AircraftService = Depends(get_aircraft_service)
 ):
     return svc.repair_aircraft(aircraft_id)
+
 
 @app.delete("/aircraft/{route_id}")
 def decommission_aircraft(
     aircraft_id: UUID, 
     authorization_code: str,
-    svc: FlightOperationService = Depends(get_flight_operation_service)
+    svc: AircraftService = Depends(get_aircraft_service)
 ):
     try:
         if authorization_code != AUTHORIZATION:
@@ -377,6 +381,11 @@ def decommission_aircraft(
                 status_code=400, detail="Permission denied: not authorized to delete routes"
             )
         return svc.decommission_aircraft(aircraft_id)
+    except Exception as e:
+         raise HTTPException(
+        status_code=500,
+        detail=str(e)
+        )   
     
 
     

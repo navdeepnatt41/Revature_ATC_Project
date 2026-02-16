@@ -1,6 +1,7 @@
 """
 Data Transfer Objects (DTOs) for Flight entities.
 """
+
 from datetime import datetime
 from enum import Enum
 from uuid import UUID
@@ -12,6 +13,7 @@ class FlightStatus(str, Enum):
     """
     Operational states of a flight lifecycle.
     """
+
     SCHEDULED = "SCHEDULED"
     IN_FLIGHT = "IN-FLIGHT"
     ARRIVED = "ARRIVED"
@@ -23,22 +25,38 @@ class FlightCreate(BaseModel):
     """
     Data schema for initializing a new flight record.
     """
+
     route_id: UUID = Field(..., description="ID of the predefined flight route")
-    flight_status: FlightStatus = Field(FlightStatus.SCHEDULED, description="Initial flight state")
-    aircraft_id: UUID = Field(..., description="ID of the aircraft assigned to the flight")
-    arrival_time: datetime | None = Field(None, description="Projected arrival timestamp")
-    departure_time: datetime | None = Field(None, description="Projected departure timestamp")
+    flight_status: FlightStatus = Field(
+        FlightStatus.SCHEDULED, description="Initial flight state"
+    )
+    aircraft_id: UUID = Field(
+        ..., description="ID of the aircraft assigned to the flight"
+    )
+    arrival_time: datetime | None = Field(
+        None, description="Projected arrival timestamp"
+    )
+    departure_time: datetime | None = Field(
+        None, description="Projected departure timestamp"
+    )
 
 
 class FlightRead(BaseModel):
     """
     Data schema for flight information retrieved from the database.
     """
-    flight_id: UUID = Field(..., description="Unique database identifier for the flight")
+
+    flight_id: UUID = Field(
+        ..., description="Unique database identifier for the flight"
+    )
     route_id: UUID = Field(..., description="Foreign key to the associated route")
     flight_status: FlightStatus = Field(..., description="Current operational status")
     aircraft_id: UUID = Field(..., description="Foreign key to the assigned aircraft")
-    arrival_time: datetime | None = Field(None, description="Actual or projected arrival time")
-    departure_time: datetime | None = Field(None, description="Actual or projected departure time")
+    arrival_time: datetime | None = Field(
+        None, description="Actual or projected arrival time"
+    )
+    departure_time: datetime | None = Field(
+        None, description="Actual or projected departure time"
+    )
 
     model_config = ConfigDict(from_attributes=True)

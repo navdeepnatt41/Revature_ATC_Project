@@ -4,8 +4,7 @@ from uuid import UUID
 from src.domain.airport import Airport
 from src.domain.flight import Flight
 from src.domain.route import Route
-from src.repositories.flight_repository_protocol import \
-    FlightRepositoryProtocol
+from src.repositories.flight_repository_protocol import FlightRepositoryProtocol
 
 
 class MockFlightRepository:
