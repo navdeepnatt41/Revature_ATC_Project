@@ -93,10 +93,15 @@ def get_flight_operation_service(
 # Endpoints
 # ==================================================================================================
 
+@app.get("/status")
+def status():
+    return {"Status": "Ok!"}
 # Tentatively completed endpoint
-@app.get("/aircraft/available/{airport_code}")
+@app.get("/aircraft/available/")
 def available_aircraft_at_airport(airport_code: str, svc: FlightOperationService =  Depends(get_flight_operation_service)):
-    return svc.aircraft_repo.availabe_aircraft_by_airport(airport_code)
+    return {
+        "aircraft": svc.aircraft_repo.availabe_aircraft_by_airport(airport_code)
+    }
     
 # Tentatively completed endpoint
 @app.get("/employee/available/{airport_code}")
@@ -168,7 +173,7 @@ def schedule_flight_crew(
     except AppErrorException as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/flight/launch") ## <<< JUAN working on this
+@app.post("/flight/launch") 
 def launch_flight(
     flight_id: UUID,
     svc: FlightOperationService = Depends(get_flight_operation_service)
@@ -207,7 +212,6 @@ def launch_flight(
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred while launching flight")
     
-
 
 
 # ==================================================================================================

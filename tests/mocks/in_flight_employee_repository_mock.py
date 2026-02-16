@@ -27,12 +27,8 @@ class MockInFlightEmployeeRepository:
 
     def update_status_location(self, employee: InFlightEmployee, status: InFlightStatus, location: str) -> InFlightEmployee:
         employee.employee_status = status
-        employee.employee_location = 
-        return existing
+        employee.employee_location = location
+        return employee
 
     def delete(self, employee_id: UUID) -> None:
-        employee = self.session.get(InFlightEmployee, employee_id)
-        if employee is None:
-            raise ValueError("Employee not found")
-        self.session.delete(employee)
-        self.session.commit()
+        pass

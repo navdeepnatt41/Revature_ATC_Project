@@ -82,6 +82,7 @@ class FlightOperationService:
             destination_airport_code=destination_airport_code,
         )
         return self.route_repo.update(route)
+        
 
     def route_delete(self, route_id: UUID) -> None:
         self.route_repo.delete(route_id)
@@ -158,6 +159,7 @@ class FlightOperationService:
             aircraft.aircraft_status = AircraftStatus.AVAILABLE
 
         return self.aircraft_repo.update(aircraft)
+    
 
     def update_flight_status(self, flight_id: UUID, status: FlightStatus):
         flight = self.flight_repo.get(flight_id)
@@ -192,6 +194,7 @@ class FlightOperationService:
         if departure >= arrival:
             raise AppErrorException("Departure time must be before arrival time")
         
+        print(f"{route_id} - {aircraft_id} - {arrival} - {departure}")
         new_flight = Flight(
             route_id=route_id,
             aircraft_id=aircraft_id,
@@ -304,4 +307,11 @@ class FlightOperationService:
             )
 
         return created_assignments
+                
+    # ===================================================================
+    # Aircraft Service
+    # ===================================================================
+    
+    def repair_aircraft(self, flight: Flight, employees: list[InFlightEmployee]):
+        pass
     # ===================================================================
