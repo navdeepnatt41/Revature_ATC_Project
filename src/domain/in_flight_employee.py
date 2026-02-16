@@ -4,6 +4,7 @@ Defines the SQLAlchemy ORM for the InFlightEmployee table that represents employ
 
 import uuid
 from enum import Enum
+from dataclasses import dataclass
 
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Enum as SQLEnum
@@ -17,7 +18,7 @@ class EmployeePosition(Enum):
     """
     An Enum that defines the different roles each employee has
 
-    Args:
+    Attributes:
         CAPTAIN (str): The leading pilot for the flight
         COPILOT (str): The co-pilot assisting the captain
         FLIGHT_MANAGER (str): The onboard flight manager
@@ -34,7 +35,7 @@ class InFlightStatus(Enum):
     An Enum that provides statuses as to whether an employee can be assigned
     to a flight or is already busy.
 
-    Args:
+    Attributes:
         AVAILABLE (str): The employee can be scheduled for a flight
         SCHEDULED (str): The employee is already scheduled and can not be re-scheduled
     """
@@ -42,6 +43,7 @@ class InFlightStatus(Enum):
     SCHEDULED = "SCHEDULED"
 
 
+@dataclass
 class InFlightEmployee(Base):
     """
     The SQLAlchemy ORM object that represents the InFlightEmployee Table

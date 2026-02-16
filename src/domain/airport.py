@@ -15,7 +15,7 @@ class Airport(Base):
     """
     The Airport ORM for the Airport table in the database.
 
-    Args:
+    Attributes:
         airport_code (Column[String]): The IANA code that uniquely identifies an airport
         airport_name (Column[String]): The official name for an airport
         airport_country (Column[String]): The country in which the airport is located

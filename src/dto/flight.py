@@ -1,11 +1,17 @@
+"""
+Data Transfer Objects (DTOs) for Flight entities.
+"""
 from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FlightStatus(str, Enum):
+    """
+    Operational states of a flight lifecycle.
+    """
     SCHEDULED = "SCHEDULED"
     IN_FLIGHT = "IN-FLIGHT"
     ARRIVED = "ARRIVED"
@@ -14,28 +20,25 @@ class FlightStatus(str, Enum):
 
 
 class FlightCreate(BaseModel):
-    route_id: UUID
-    flight_status: FlightStatus = FlightStatus.SCHEDULED
-    aircraft_id: UUID
-    arrival_time: datetime | None = None
-    departure_time: datetime | None = None
+    """
+    Data schema for initializing a new flight record.
+    """
+    route_id: UUID = Field(..., description="ID of the predefined flight route")
+    flight_status: FlightStatus = Field(FlightStatus.SCHEDULED, description="Initial flight state")
+    aircraft_id: UUID = Field(..., description="ID of the aircraft assigned to the flight")
+    arrival_time: datetime | None = Field(None, description="Projected arrival timestamp")
+    departure_time: datetime | None = Field(None, description="Projected departure timestamp")
 
 
 class FlightRead(BaseModel):
-    flight_id: UUID
-    route_id: UUID
-    flight_status: FlightStatus
-    aircraft_id: UUID
-    arrival_time: datetime | None = None
-    departure_time: datetime | None = None
+    """
+    Data schema for flight information retrieved from the database.
+    """
+    flight_id: UUID = Field(..., description="Unique database identifier for the flight")
+    route_id: UUID = Field(..., description="Foreign key to the associated route")
+    flight_status: FlightStatus = Field(..., description="Current operational status")
+    aircraft_id: UUID = Field(..., description="Foreign key to the assigned aircraft")
+    arrival_time: datetime | None = Field(None, description="Actual or projected arrival time")
+    departure_time: datetime | None = Field(None, description="Actual or projected departure time")
 
-    class Config:
-        from_attributes = True
-        fields = {
-            "flight_id": ...,
-            "route_id": ...,
-            "flight_status": ...,
-            "aircraft_id": ...,
-            "arrival_time": ...,
-            "departure_time": ...,
-        }
+    model_config = ConfigDict(from_attributes=True)
