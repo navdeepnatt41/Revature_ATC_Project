@@ -1,10 +1,10 @@
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.domain.flight import Flight, FlightStatus
+from src.domain.flight import Flight
 from src.domain.flight_crew import FlightCrew
 from src.domain.route import Route
 from src.repositories.route_repository_protocol import RouteRepositoryProtocol

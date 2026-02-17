@@ -5,7 +5,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.domain.aircraft import Aircraft, AircraftStatus
-from src.domain.airport import Airport
 from src.repositories.aircraft_repository_protocol import AircraftRepositoryProtocol
 
 
@@ -49,7 +48,7 @@ class AircraftRepository(AircraftRepositoryProtocol):
         self.session.delete(aircraft)
         self.session.commit()
 
-    def available_aircraft_by_airport(self, airport_code: str) -> list[Airport]:
+    def available_aircraft_by_airport(self, airport_code: str) -> list[Aircraft]:
         return self.session.scalars(
             select(Aircraft)
             .where(

@@ -4,7 +4,7 @@ from uuid import UUID
 from src.domain.flight_crew import FlightCrew
 
 
-class MockFlightCrewRepository:
+class FlightCrewRepositoryMock:
     def create(self, flight_crew: FlightCrew) -> FlightCrew:
         return flight_crew
 

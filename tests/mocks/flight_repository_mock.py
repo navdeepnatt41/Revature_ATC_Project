@@ -2,12 +2,12 @@ from typing import Optional
 from uuid import UUID
 
 from src.domain.airport import Airport
-from src.domain.flight import Flight
+from src.domain.flight import Flight, FlightStatus
 from src.domain.route import Route
 from src.repositories.flight_repository_protocol import FlightRepositoryProtocol
 
 
-class MockFlightRepository:
+class FlightRepositoryMock:
     def create(self, flight: Flight) -> Flight:
         return flight
 
@@ -42,6 +42,7 @@ class MockFlightRepository:
         ]
 
     def update(self, flight: Flight) -> Flight:
+        
         return flight
 
     def delete(self, flight_id: UUID) -> None:
@@ -58,3 +59,13 @@ class MockFlightRepository:
                 departure_time="2022-03-01 10:00:00",
             )
         ]
+    
+    def update_flight_status_in_flight(self, flight_id: str) -> Flight:
+        return Flight(
+                flight_id,
+                route_id="b1111111-1111-1111-1111-111111111111",
+                flight_status= FlightStatus.IN_FLIGHT,
+                aircraft_id="11111111-1111-1111-1111-111111111111",
+                arrival_time="2022-03-01 14:00:00",
+                departure_time="2022-03-01 10:00:00",
+            )

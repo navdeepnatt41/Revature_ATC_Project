@@ -4,7 +4,7 @@ from uuid import UUID
 from src.domain.in_flight_employee import InFlightEmployee, InFlightStatus
 
 
-class MockInFlightEmployeeRepository:
+class InFlightEmployeeRepositoryMock:
     def create(self, employee: InFlightEmployee) -> InFlightEmployee:
         return employee
 
@@ -81,3 +81,27 @@ class MockInFlightEmployeeRepository:
 
     def delete(self, employee_id: UUID) -> None:
         pass
+
+    def available_employees_at_airport(
+            self, airport_code: str
+    ) -> list[InFlightEmployee]:
+        return [
+            InFlightEmployee(
+                employee_id="aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+                first_name="test",
+                last_name="test2",
+                position="CAPTAIN",
+                employee_status="AVAILABLE",
+                supervisor=None,
+                employee_location=airport_code,
+            ),
+            InFlightEmployee(
+                employee_id="aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
+                first_name="test2",
+                last_name="test2",
+                position="CAPTAIN",
+                employee_status="AVAILABLE",
+                supervisor=None,
+                employee_location=airport_code,
+            ),
+        ]

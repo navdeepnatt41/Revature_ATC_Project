@@ -15,14 +15,17 @@ from src.domain.in_flight_employee import (
 )
 
 from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
+from src.repositories.airport_repository_protocol import AirportRepositoryProtocol
 
 
 class InFlightEmployeeService:
     def __init__(
         self,
-        in_flight_employee_repo: InFlightEmployeeRepositoryProtocol
+        in_flight_employee_repo: InFlightEmployeeRepositoryProtocol,
+        airport_repo: AirportRepositoryProtocol 
     ):
         self.in_flight_employee_repo = in_flight_employee_repo
+        self.airport_repo = airport_repo
 
     ALLOWED_STATUSES = {InFlightStatus.AVAILABLE, InFlightStatus.SCHEDULED}
 
@@ -42,4 +45,6 @@ class InFlightEmployeeService:
         return self.in_flight_employee_repo.list_all()
 
     def available_employees_at_airport(self, airport_code: str) -> list[InFlightEmployee]:
+        if not self.airport_repo.get(airport_code):
+            raise NotFoundException("Airport could not be found")
         return self.in_flight_employee_repo.available_employees_at_airport(airport_code)

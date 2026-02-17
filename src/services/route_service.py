@@ -2,6 +2,7 @@ from typing import Optional
 from uuid import UUID
 
 from src.domain.exceptions import (
+    AppErrorException,
     EntityAlreadyExistsException,
     NotFoundException,
 )
@@ -64,6 +65,10 @@ class RouteService:
         return self.route_repo.update(route)
 
     def route_delete(self, route_id: UUID) -> None:
+        route = self.route_repo.get_by_id(route_id)
+        if not route:
+            raise NotFoundException("This route does not exist.")
+        
         candidate_flights = [
             flight
             for flight in self.flight_repo.list_all()
@@ -88,6 +93,9 @@ class RouteService:
         self.route_repo.delete(route_id)
 
     def deletion_proposal(self, route_id: str):
+        route = self.route_repo.get_by_id(route_id)
+        if not route:
+            raise NotFoundException("This route does not exist.")
         return self.route_repo.deletion_proposal(route_id=route_id)
 
     def _validate_route(
@@ -98,13 +106,13 @@ class RouteService:
         route_id=None,
     ) -> None:
         if require_id and not route_id:
-            raise ValueError("route_id is required for update")
+            raise AppErrorException("route_id is required for update")
         if not origin_airport_code:
-            raise ValueError("origin_airport_code is required")
+            raise AppErrorException("origin_airport_code is required")
         if not destination_airport_code:
-            raise ValueError("destination_airport_code is required")
+            raise AppErrorException("destination_airport_code is required")
         if origin_airport_code == destination_airport_code:
-            raise ValueError("origin and destination airports must be different")
+            raise AppErrorException("origin and destination airports must be different")
         if self.airport_repo.get(origin_airport_code) is None:
             raise NotFoundException("Origin airport cannot be found")
         if self.airport_repo.get(destination_airport_code) is None:

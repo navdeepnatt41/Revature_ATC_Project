@@ -33,10 +33,10 @@ class FlightCreate(BaseModel):
     aircraft_id: UUID = Field(
         ..., description="ID of the aircraft assigned to the flight"
     )
-    arrival_time: datetime = Field(
+    arrival_time: str = Field(
         None, description="Projected arrival timestamp"
     )
-    departure_time: datetime = Field(
+    departure_time: str = Field(
         None, description="Projected departure timestamp"
     )
 

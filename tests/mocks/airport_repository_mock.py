@@ -3,7 +3,7 @@ from typing import Optional
 from src.domain.airport import Airport
 
 
-class MockAirportRepository:
+class AirportRepositoryMock:
     def create(self, airport: Airport) -> Airport:
         return airport
 

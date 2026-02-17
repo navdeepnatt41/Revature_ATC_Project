@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
+from math import radians, sin, cos, asin, sqrt
 
 from src.domain.aircraft import Aircraft, AircraftStatus
 from src.domain.exceptions import (
@@ -9,6 +10,8 @@ from src.domain.exceptions import (
     NotFoundException,
     PermissionDeniedException,
 )
+
+
 from src.domain.flight import Flight, FlightStatus
 from src.domain.flight_crew import FlightCrew
 from src.domain.in_flight_employee import (
@@ -18,6 +21,7 @@ from src.domain.in_flight_employee import (
 )
 
 from src.repositories.aircraft_repository_protocol import AircraftRepositoryProtocol
+from src.repositories.airport_repository_protocol import AirportRepositoryProtocol
 from src.repositories.flight_crew_repository_protocol import FlightCrewRepositoryProtocol
 from src.repositories.flight_repository_protocol import FlightRepositoryProtocol
 from src.repositories.in_flight_employee_repository_protocol import InFlightEmployeeRepositoryProtocol
@@ -28,27 +32,44 @@ class FlightService:
     def __init__(
         self,
         aircraft_repo: AircraftRepositoryProtocol,
+        airport_repo: AirportRepositoryProtocol,
         flight_crew_repo: FlightCrewRepositoryProtocol,
         flight_repo: FlightRepositoryProtocol,
         in_flight_employee_repo: InFlightEmployeeRepositoryProtocol,
         route_repo: RouteRepositoryProtocol
     ):
         self.aircraft_repo = aircraft_repo
+        self.airport_repo = airport_repo
         self.flight_crew_repo = flight_crew_repo
         self.flight_repo = flight_repo
         self.in_flight_employee_repo = in_flight_employee_repo
         self.route_repo = route_repo
+    
+    def calculate_distance(self, from_coordinates: tuple, to_coordinates: tuple) -> int:
+        """Calculate distance in miles between two coordinates using Haversine formula"""
+        lon1, lat1 = from_coordinates
+        lon2, lat2 = to_coordinates
+        lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a))
+        r = 3956  # miles
+        return int(c * r)
     
     def confirm_flight_landed(self, flight_id: UUID) -> Aircraft:
         flight = self.flight_repo.get(flight_id)
         if flight is None:
             raise NotFoundException("Flight cannot be found")
         if flight.flight_status != FlightStatus.IN_FLIGHT:
-            raise AppErrorException("The flight is already grounded")
+            raise PermissionDeniedException("The flight is already grounded")
 
         aircraft = self.aircraft_repo.get(flight.aircraft_id)
         crew = self.flight_crew_repo.get_by_flight(flight_id)
         route = self.route_repo.get_by_id(flight.route_id)
+        origin = self.airport_repo.get(route.origin_airport_code)
+        destination = self.airport_repo.get(route.destination_airport_code)
 
         flight.flight_status = FlightStatus.ARRIVED
         self.flight_repo.update(flight)
@@ -62,7 +83,7 @@ class FlightService:
             )
 
         aircraft.aircraft_location = route.destination_airport_code
-        aircraft.current_distance += 50000  # REPLACE WITH DISTANCE CALCULATION
+        aircraft.current_distance += self.calculate_distance((origin.longitude, origin.latitude), (destination.longitude, destination.latitude))
         if aircraft.current_distance > aircraft.maintenance_interval:
             aircraft.aircraft_status = AircraftStatus.AOG
         else:
@@ -126,7 +147,7 @@ class FlightService:
             raise PermissionDeniedException("Aircraft is not available")
 
         if departure >= arrival:
-            raise AppErrorException("Departure time must be before arrival time")
+            raise PermissionDeniedException("Departure time must be before arrival time")
 
         print(f"{route_id} - {aircraft_id} - {arrival} - {departure}")
         new_flight = Flight(
@@ -155,6 +176,11 @@ class FlightService:
         flight = self.flight_repo.get(flight_id)
         if flight is None:
             raise NotFoundException("Flight cannot be found")
+        
+        if flight.flight_status not in [FlightStatus.SCHEDULED, FlightStatus.DELAYED]:
+            raise PermissionDeniedException(
+                "Only scheduled or delayed flights can be launched"
+            )
         
         # Check if flight has a flight crew
         flight_crew = self.flight_crew_repo.get_by_flight(flight_id)
@@ -194,7 +220,9 @@ class FlightService:
         if flight is None:
             raise NotFoundException("Flight cannot be found")
         if extra_minutes is None:
-            raise NotFoundException("xd?")
+            raise AppErrorException("Need number of minutes to delay flight by ")
+        if flight.flight_status not in [FlightStatus.DELAYED, FlightStatus.SCHEDULED]:
+            raise PermissionDeniedException(f"Cannot delay flight that is {flight.flight_status}")
 
         if flight.departure_time:
             flight.departure_time += timedelta(minutes=extra_minutes)
@@ -204,7 +232,6 @@ class FlightService:
 
         if flight.flight_status:
             flight.flight_status = FlightStatus.DELAYED
-        print(flight.flight_status)
 
         return self.flight_repo.update(flight)
 
@@ -225,7 +252,7 @@ class FlightService:
         if old_aircraft.aircraft_id == aircraft_id:
             raise AppErrorException("Aircraft already assigned to this Flight")
         if old_aircraft.aircraft_location != aircraft.aircraft_location:
-            raise AppErrorException("Aircraft not in the same airport as Flight")
+            raise PermissionDeniedException("Aircraft not in the same airport as Flight")
         if aircraft.aircraft_status == AircraftStatus.DEPLOYED:
             raise AppErrorException(
                 f"Aircraft: {aircraft.aircraft_id} is already assigned or deployed"
