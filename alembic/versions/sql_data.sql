@@ -1,3 +1,5 @@
+
+/*
 INSERT INTO airport (airport_code, airport_name, airport_country, airport_city, airport_address, longitude, latitude) VALUES
 ('JFK', 'John F. Kennedy International Airport', 'USA', 'New York', 'Queens, NY 11430', '-73.7781', '40.6413'),
 ('LAX', 'Los Angeles International Airport', 'USA', 'Los Angeles', '1 World Way, Los Angeles, CA 90045', '-118.4085', '33.9416'),
@@ -44,3 +46,7 @@ INSERT INTO flight_crew (flight_id, employee_id) VALUES
 ('f2222222-2222-2222-2222-222222222222', 'aaaaaaa6-aaaa-aaaa-aaaa-aaaaaaaaaaa6'),
 ('f2222222-2222-2222-2222-222222222222', 'aaaaaaa7-aaaa-aaaa-aaaa-aaaaaaaaaaa7'),
 ('f2222222-2222-2222-2222-222222222222', 'aaaaaaa8-aaaa-aaaa-aaaa-aaaaaaaaaaa8');
+*/
+
+INSERT INTO aircraft (aircraft_id, manufacturer, aircraft_model, current_distance, maintenance_interval, aircraft_status, aircraft_location) VALUES
+('65555555-5555-5555-5555-555555555555', 'Airbus', 'A321', 8000, 15000, 'AVAILABLE', 'LAX');

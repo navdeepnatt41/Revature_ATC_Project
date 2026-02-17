@@ -1,8 +1,8 @@
-"""revised
+"""init 67
 
-Revision ID: 3d9c3b8209f6
+Revision ID: c0a40cb0f4b8
 Revises: 
-Create Date: 2026-02-14 23:07:59.762089
+Create Date: 2026-02-16 15:14:39.644315
 
 """
 from typing import Sequence, Union
@@ -12,12 +12,11 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3d9c3b8209f6'
+revision: str = 'c0a40cb0f4b8'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-position = sa.Enum('CAPTAIN', 'COPILOT', 'FLIGHT_MANAGER', 'FLIGHT_ATTENDANT', name='employee_position', create_type = False)
 
 def upgrade() -> None:
     """Upgrade schema."""
@@ -47,7 +46,7 @@ def upgrade() -> None:
     sa.Column('employee_id', sa.UUID(), nullable=False),
     sa.Column('first_name', sa.String(), nullable=True),
     sa.Column('last_name', sa.String(), nullable=True),
-    sa.Column('position', position, nullable=True),
+    sa.Column('position', sa.Enum('CAPTAIN', 'COPILOT', 'FLIGHT_MANAGER', 'FLIGHT_ATTENDANT', name='employeeposition'), nullable=True),
     sa.Column('employee_status', sa.Enum('AVAILABLE', 'SCHEDULED', name='inflightstatus'), nullable=True),
     sa.Column('supervisor', sa.UUID(), nullable=True),
     sa.Column('employee_location', sa.String(), nullable=False),
@@ -66,7 +65,7 @@ def upgrade() -> None:
     op.create_table('flight',
     sa.Column('flight_id', sa.UUID(), nullable=False),
     sa.Column('route_id', sa.UUID(), nullable=False),
-    sa.Column('flight_status', sa.Enum('SCHEDULED', 'IN_FLIGHT', 'ARRIVED', 'DELAYED', 'CANCELLED', name='flight_status'), nullable=True),
+    sa.Column('flight_status', sa.Enum('SCHEDULED', 'IN_FLIGHT', 'ARRIVED', 'DELAYED', 'CANCELLED', name='flightstatus'), nullable=True),
     sa.Column('aircraft_id', sa.UUID(), nullable=False),
     sa.Column('arrival_time', sa.DateTime(), nullable=True),
     sa.Column('departure_time', sa.DateTime(), nullable=True),

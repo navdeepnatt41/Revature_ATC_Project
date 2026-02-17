@@ -175,7 +175,7 @@ class FlightOperationService:
         arrival: datetime,
         departure: datetime
     ) -> Flight:
-        route = self.route_repo.get(route_id)
+        route = self.route_repo.get_by_id(route_id)
         if route is None:
             raise NotFoundException("Route cannot be found")
         

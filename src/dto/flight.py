@@ -12,7 +12,7 @@ class FlightStatus(str, Enum):
 
 class FlightCreate(BaseModel):
     route_id: UUID
-    flight_status: FlightStatus = FlightStatus.SCHEDULED
+    # flight_status: FlightStatus = FlightStatus.SCHEDULED
     aircraft_id: UUID
     arrival_time: datetime | None = None
     departure_time: datetime | None = None

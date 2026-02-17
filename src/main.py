@@ -21,7 +21,7 @@ from src.domain.airport import Airport
 from src.domain.route import Route
 from src.domain.flight import Flight, FlightStatus
 
-from src.dto.flight import FlightRead
+from src.dto.flight import FlightCreate, FlightRead
 from src.dto.flight_crew import FlightCrewRead, FlightCrewScheduleRequest
 
 #
@@ -95,7 +95,7 @@ def get_flight_operation_service(
 
 @app.get("/status")
 def status():
-    return {"Status": "Ok!"}
+    return {"Status": "67!"}
 # Tentatively completed endpoint
 @app.get("/aircraft/available/")
 def available_aircraft_at_airport(airport_code: str, svc: FlightOperationService =  Depends(get_flight_operation_service)):
@@ -138,18 +138,15 @@ def update_flight_delay(flight_id: UUID, new_status: str, extra_minutes: int,  s
 
 @app.post("/flight/schedule", response_model = FlightRead)
 def schedule_flight(
-    route_id: UUID,
-    aircraft_id: UUID,
-    departure: datetime,
-    arrival: datetime,
+    payload: FlightCreate,
     svc: FlightOperationService = Depends(get_flight_operation_service)
 ):
     try:
         return svc.schedule_flight(
-            route_id=route_id,
-            aircraft_id=aircraft_id,
-            arrival=arrival,
-            departure=departure,
+            route_id=payload.route_id,
+            aircraft_id=payload.aircraft_id,
+            arrival=payload.arrival,
+            departure=payload.departure
         )
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
