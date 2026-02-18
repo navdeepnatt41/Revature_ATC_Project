@@ -67,6 +67,36 @@ function Ensure-FileWithContent {
     }
 }
 
+function Ensure-LocalDatabaseUrl {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$EnvPath
+    )
+
+    if (-not (Test-Path $EnvPath)) {
+        return
+    }
+
+    $expectedUrl = "postgresql+psycopg://postgres:password@localhost:5432/merge_conflicts_flights_db"
+    $envContent = Get-Content -Path $EnvPath -Raw
+
+    if ($envContent -match "DATABASE_URL=.*@db:") {
+        $updated = [regex]::Replace(
+            $envContent,
+            "(?m)^DATABASE_URL=.*$",
+            "DATABASE_URL=$expectedUrl"
+        )
+        Set-Content -Path $EnvPath -Value $updated
+        Write-Host "Updated .env DATABASE_URL from Docker host 'db' to local host 'localhost'."
+        return
+    }
+
+    if ($envContent -notmatch "(?m)^DATABASE_URL=") {
+        Add-Content -Path $EnvPath -Value "`nDATABASE_URL=$expectedUrl"
+        Write-Host "Added missing DATABASE_URL to .env for local setup."
+    }
+}
+
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $frontendDir = Join-Path $projectRoot "airline-ops-frontend"
 $seedFile = Join-Path $projectRoot "alembic\versions\sql_data.sql"
@@ -89,6 +119,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 POSTGRES_DB=merge_conflicts_flights_db
 "@
+Ensure-LocalDatabaseUrl -EnvPath $backendEnv
 Ensure-FileWithContent -Path $frontendEnv -DisplayName "airline-ops-frontend/.env" -Content "VITE_API_BASE_URL=http://localhost:8000`n"
 
 if (-not (Test-Path $seedFile)) {

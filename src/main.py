@@ -284,10 +284,6 @@ def land_flight(payload: Flight_ID, svc: FlightService = Depends(get_flight_serv
         raise HTTPException(status_code=404, detail=str(e))
     except PermissionDeniedException as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail="An error occurred while landing flight"
-        )
 
 
 # ==================================================================================================

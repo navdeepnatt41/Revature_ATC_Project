@@ -54,6 +54,17 @@ function upsertRecent(flight: FlightRead) {
   writeJson(RECENT_FLIGHTS_KEY, next);
 }
 
+function markRecentFlightArrived(flightId: string) {
+  const existing = readJson<FlightRead[]>(RECENT_FLIGHTS_KEY, []);
+  const next = existing.map((f) =>
+    f.flight_id === flightId
+      ? { ...f, flight_status: "ARRIVED", arrival_time: new Date().toISOString() }
+      : f
+  );
+  writeJson(RECENT_FLIGHTS_KEY, next);
+}
+
+
 function statusTone(status?: string) {
   switch (status) {
     case "ARRIVED":
@@ -157,7 +168,10 @@ export default function FlightOpsPage() {
 
   const landMut = useMutation({
     mutationFn: (v: z.infer<typeof FlightIdSchema>) => landFlight(v),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
+      if (variables?.flight_id) {
+        markRecentFlightArrived(variables.flight_id);
+      }
       setLastResult(data);
       toast.success("Landing confirmed 🛬");
     }

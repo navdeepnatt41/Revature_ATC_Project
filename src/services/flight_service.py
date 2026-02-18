@@ -49,6 +49,10 @@ class FlightService:
         """Calculate distance in miles between two coordinates using Haversine formula"""
         lon1, lat1 = from_coordinates
         lon2, lat2 = to_coordinates
+        lon1 = float(lon1)
+        lon2 = float(lon2)
+        lat1 = float(lat1)
+        lat2 = float(lat2)
         lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
         dlon = lon2 - lon1

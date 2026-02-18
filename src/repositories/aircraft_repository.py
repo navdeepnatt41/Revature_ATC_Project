@@ -37,6 +37,7 @@ class AircraftRepository(AircraftRepositoryProtocol):
         cur_aircraft.current_distance = aircraft.current_distance
         cur_aircraft.maintenance_interval = aircraft.maintenance_interval
         cur_aircraft.aircraft_status = aircraft.aircraft_status
+        cur_aircraft.aircraft_location = aircraft.aircraft_location
         self.session.commit()
         self.session.refresh(cur_aircraft)
         return cur_aircraft
