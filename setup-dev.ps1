@@ -10,7 +10,7 @@
       - Apply Alembic migrations
       - Seed database data from alembic/versions/sql_data.sql
       - Install frontend dependencies with npm
-      - Optionally start the frontend dev server
+    - Start the frontend dev server
 
     Prerequisites:
       - Make sure Docker Desktop is installed and running.
@@ -20,13 +20,11 @@
 
     Usage examples:
       .\setup-dev.ps1
-      .\setup-dev.ps1 -RunFrontend
       .\setup-dev.ps1 -SkipSeed
             .\setup-dev.ps1 -FromScratch
 #>
 
 param(
-    [switch]$RunFrontend,
     [switch]$SkipNpmInstall,
     [switch]$SkipPoetryInstall,
         [switch]$SkipSeed,
@@ -67,6 +65,36 @@ function Ensure-FileWithContent {
     }
 }
 
+function Ensure-LocalDatabaseUrl {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$EnvPath
+    )
+
+    if (-not (Test-Path $EnvPath)) {
+        return
+    }
+
+    $expectedUrl = "postgresql+psycopg://postgres:password@localhost:5432/merge_conflicts_flights_db"
+    $envContent = Get-Content -Path $EnvPath -Raw
+
+    if ($envContent -match "DATABASE_URL=.*@db:") {
+        $updated = [regex]::Replace(
+            $envContent,
+            "(?m)^DATABASE_URL=.*$",
+            "DATABASE_URL=$expectedUrl"
+        )
+        Set-Content -Path $EnvPath -Value $updated
+        Write-Host "Updated .env DATABASE_URL from Docker host 'db' to local host 'localhost'."
+        return
+    }
+
+    if ($envContent -notmatch "(?m)^DATABASE_URL=") {
+        Add-Content -Path $EnvPath -Value "`nDATABASE_URL=$expectedUrl"
+        Write-Host "Added missing DATABASE_URL to .env for local setup."
+    }
+}
+
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $frontendDir = Join-Path $projectRoot "airline-ops-frontend"
 $seedFile = Join-Path $projectRoot "alembic\versions\sql_data.sql"
@@ -89,6 +117,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 POSTGRES_DB=merge_conflicts_flights_db
 "@
+Ensure-LocalDatabaseUrl -EnvPath $backendEnv
 Ensure-FileWithContent -Path $frontendEnv -DisplayName "airline-ops-frontend/.env" -Content "VITE_API_BASE_URL=http://localhost:8000`n"
 
 if (-not (Test-Path $seedFile)) {
@@ -138,17 +167,9 @@ try {
         Write-Host "[7/8] Skipping npm install (--SkipNpmInstall)."
     }
 
-    if ($RunFrontend) {
-        Write-Host "[8/8] Starting frontend dev server (Vite)..."
-        npm run dev
-    }
-    else {
-        Write-Host "[8/8] Setup complete."
-        Write-Host "Next steps:"
-        Write-Host "  1) Backend should be available at http://localhost:8000"
-        Write-Host "  2) Run frontend with: npm run dev"
-        Write-Host "  3) Open frontend at http://localhost:5173"
-    }
+    Write-Host "[8/8] Opening frontend in browser and starting dev server (Vite)..."
+    Start-Process "http://localhost:5173"
+    npm run dev
 }
 finally {
     Pop-Location
